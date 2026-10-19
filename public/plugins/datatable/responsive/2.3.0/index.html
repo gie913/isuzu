@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+	
+<!-- Mirrored from cdn.datatables.net/responsive/2.3.0/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 09 Oct 2024 03:05:16 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+
+		<title>Responsive 2.3.0</title>
+		
+		<link rel="shortcut icon" type="image/png" href="../../../datatables.net/media/images/favicon.png">
+		<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://datatables.net/feeds/releases.xml">
+		
+		<link rel="stylesheet" type="text/css" href="../../../datatables.net/media/css/site3d37.css?_=f1576ca5720a40854acc6fac586e631a1">
+		
+		<style type="text/css">
+			
+		</style>
+
+		<script src="../../../datatables.net/media/js/mode71d3.js?_=58ea3b2af8c01e35973b49be5344a33a"></script>
+		<script type="text/javascript" src="../../../datatables.net/media/js/site71d3.js?_=58ea3b2af8c01e35973b49be5344a33a" data-domain="cdn.datatables.net" data-api="https://analytics.datatables.net/api/event"></script>
+		<script src="https://datatables.net/media/js/dynamic.php"></script>
+		<script defer async src="../../../media.ethicalads.io/media/client/ethicalads.min.js" onload="window.dtAds()" onerror="window.dtAds()"></script>
+		
+		<script class="init">
+			dt_demo.init();
+
+			
+		</script>
+	</head>
+	<body class="">
+		<a name="top"></a>
+
+		<div class="fw-background">
+			<div>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+
+		<div class="fw-container">
+			<div class="fw-header">
+				<div class="nav-wrapper">
+					<div class="nav-master">
+						<div class="nav-item active">
+							<a href="https://datatables.net/">
+								<span class="icon-dt"></span>
+								<span>DataTables</span>
+								<div class="nav-explain">
+									Advanced interaction<br>features for your tables.
+								</div>
+							</a>
+						</div>
+						<div class="nav-item">
+							<a href="https://editor.datatables.net/">
+								<span class="icon-e"></span>
+								<span>Editor</span>
+								<div class="nav-explain">
+									Comprehensive editing<br>library for DataTables.
+								</div>
+							</a>
+						</div>
+					</div>
+
+					<div class="nav-search">
+						<div class="nav-item i-manual">
+							<a href="https://datatables.net/manual">Manual</a>
+						</div>
+						<div class="nav-item i-download">
+							<a href="https://datatables.net/download">Download</a>
+						</div>
+						<div class="nav-item i-user" style="display: none">
+							<div class="account"></div>
+						</div>
+						<div class="nav-item search" style="display: none"></div>
+						<div class="nav-item dt-demo-options"></div>
+					</div>
+				</div>
+				<div class="nav-ad">
+					<div data-ea-publisher="datatablesnet" data-ea-type="image" data-ea-manual="true"></div>
+				</div>
+			</div>
+
+			<div class="fw-nav">
+				<div class="nav-main">
+					<ul><li class=" sub"><a href="http://datatables.net/examples/index">Examples</a></li><li class=" sub"><a href="http://datatables.net/manual/index">Manual</a></li><li class=" sub"><a href="http://datatables.net/reference/index">Reference</a></li><li class=" sub"><a href="http://datatables.net/extensions/index">Extensions</a></li><li class=" sub"><a href="http://datatables.net/plug-ins/index">Plug-ins</a></li><li class=""><a href="http://datatables.net/blog/index">Blog</a></li><li class=""><a href="http://datatables.net/forums/index">Forums</a></li><li class=""><a href="http://datatables.net/support/index">Support</a></li><li class=""><a href="http://datatables.net/faqs/index">FAQs</a></li><li class=""><a href="http://datatables.net/download/index">Download</a></li><li class=""><a href="http://datatables.net/purchase/index">Purchase</a></li></ul>
+				</div>
+
+				<div class="mobile-show">
+					<a>&#8801; <i>Show site navigation</i></a>
+				</div>
+			</div>
+
+			<div class="fw-body">
+				<div class="content">
+					<h1 class="page_title">Responsive 2.3.0</h1>
+
+					<p>DataTables CDN files for Responsive 2.3.0. This software was originally released on 12th May, 2022.</p>
+
+<h2 data-anchor="Release-notes"><a name="Release-notes" href="#Release-notes"></a>Release notes</h2>
+
+<p>Improvements to consistency in the Responsive class options and general fixes.</p>
+
+<h3 data-anchor="New"><a name="New" href="#New"></a>New</h3>
+
+<ul class="markdown">
+<li>Add <code>dtr-hidden</code> class to columns which are hidden by Responsive</li>
+</ul>
+
+<h3 data-anchor="Updates"><a name="Updates" href="#Updates"></a>Updates</h3>
+
+<ul class="markdown">
+<li>Alias <code>none</code> and <code>all</code> to have an optional <code>dtr-</code> prefix, to make it clear that they are responsive properties</li>
+<li>Migrating to Fomantic-UI, which is a maintained fork of Semantic-UI, which is no longer being developed</li>
+<li>Examples: Clarify how breakpoints work - they are independent of each other</li>
+</ul>
+
+<h3 data-anchor="Fixes"><a name="Fixes" href="#Fixes"></a>Fixes</h3>
+
+<ul class="markdown">
+<li>Bootstrap 5 with <code>table-bordered</code> wasn't showing a right border when no columns where hidden</li>
+<li>Support DataTables 2's <code>column-calc</code> event to tell it when we are hiding columns, otherwise responsive tables can see misalignment.</li>
+<li>Don't require Bootstrap 5 modal JS if not using a modal display</li>
+<li>Docs: Consistency of use for <code>dtr-control</code> as the class name for the control column</li>
+</ul>
+
+<h2 data-anchor="Files"><a name="Files" href="#Files"></a>Files</h2>
+
+<p><h3>css</h3>
+
+<ul><li><a href="css/responsive.bootstrap.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.css</a></li>
+<li><a href="css/responsive.bootstrap.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css</a></li>
+<li><a href="css/responsive.bootstrap4.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap4.css</a></li>
+<li><a href="css/responsive.bootstrap4.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap4.min.css</a></li>
+<li><a href="css/responsive.bootstrap5.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap5.css</a></li>
+<li><a href="css/responsive.bootstrap5.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap5.min.css</a></li>
+<li><a href="css/responsive.bulma.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bulma.css</a></li>
+<li><a href="css/responsive.bulma.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.bulma.min.css</a></li>
+<li><a href="css/responsive.dataTables.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.css</a></li>
+<li><a href="css/responsive.dataTables.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css</a></li>
+<li><a href="css/responsive.foundation.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.foundation.css</a></li>
+<li><a href="css/responsive.foundation.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.foundation.min.css</a></li>
+<li><a href="css/responsive.jqueryui.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.jqueryui.css</a></li>
+<li><a href="css/responsive.jqueryui.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.jqueryui.min.css</a></li>
+<li><a href="css/responsive.semanticui.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.semanticui.css</a></li>
+<li><a href="css/responsive.semanticui.min.css">//cdn.datatables.net/responsive/2.3.0/css/responsive.semanticui.min.css</a></li>
+</ul><h3>js</h3>
+
+<ul><li><a href="js/dataTables.responsive.js">//cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.js</a></li>
+<li><a href="js/dataTables.responsive.min.js">//cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js</a></li>
+<li><a href="js/responsive.bootstrap.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap.js</a></li>
+<li><a href="js/responsive.bootstrap.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap.min.js</a></li>
+<li><a href="js/responsive.bootstrap4.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.js</a></li>
+<li><a href="js/responsive.bootstrap4.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js</a></li>
+<li><a href="js/responsive.bootstrap5.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap5.js</a></li>
+<li><a href="js/responsive.bootstrap5.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap5.min.js</a></li>
+<li><a href="js/responsive.bulma.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bulma.js</a></li>
+<li><a href="js/responsive.bulma.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.bulma.min.js</a></li>
+<li><a href="js/responsive.dataTables.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.dataTables.js</a></li>
+<li><a href="js/responsive.dataTables.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.dataTables.min.js</a></li>
+<li><a href="js/responsive.foundation.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.foundation.js</a></li>
+<li><a href="js/responsive.foundation.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.foundation.min.js</a></li>
+<li><a href="js/responsive.jqueryui.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.jqueryui.js</a></li>
+<li><a href="js/responsive.jqueryui.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.jqueryui.min.js</a></li>
+<li><a href="js/responsive.semanticui.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.semanticui.js</a></li>
+<li><a href="js/responsive.semanticui.min.js">//cdn.datatables.net/responsive/2.3.0/js/responsive.semanticui.min.js</a></li>
+</ul></p>
+
+				</div>
+			</div>
+
+			<div class="fw-page-nav">
+				<div class="page-nav">
+					<div class="page-nav-title">Page navigation</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="fw-footer">
+			<div class="copyright">
+				<h4>DataTables</h4>
+				<p>
+					DataTables designed and created by <a href="http://sprymedia.co.uk/">SpryMedia Ltd</a>.<br>
+					&copy; 2007-2024 <a href="http://datatables.net/license/mit">MIT licensed</a>. <a href="https://cdn.datatables.net/privacy.html">Privacy policy</a>.<br>
+					SpryMedia Ltd is registered in Scotland, company no. SC456502.
+				</p>
+			</div>
+		</div>
+	</body>
+
+<!-- Mirrored from cdn.datatables.net/responsive/2.3.0/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 09 Oct 2024 03:05:47 GMT -->
+</html>
