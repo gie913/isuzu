@@ -14,6 +14,11 @@ Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
 
+// Mockup Landing Page (Cloned from AutoCare Index-4)
+Route::get('/mockup', function () {
+    return view('frontend.index');
+})->name('mockup');
+
 // Fallback named route for standard Laravel auth redirection
 Route::get('/login', function () {
     return redirect()->route('admin.login');
