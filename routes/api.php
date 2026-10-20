@@ -40,6 +40,14 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Api\RoleController::class, 'update']);
             Route::delete('/{id}', [\App\Http\Controllers\Api\RoleController::class, 'destroy']);
         });
+                // Module Resource API
+        Route::prefix('modules')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\ModuleController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\ModuleController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\ModuleController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\ModuleController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\ModuleController::class, 'destroy']);
+        });
         /*==new route==*/
 
     });

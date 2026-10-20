@@ -23,14 +23,15 @@ if (!function_exists('btn_delete')) {
      * Render theme delete button.
      *
      * @param string $url
-     * @param string $confirmMessage
+     * @param string|null $confirmMessage
      * @param string $title
      * @param string|null $extraClass
+     * @param string|null $recordName
      * @return HtmlString
      */
-    function btn_delete(string $url, string $confirmMessage = 'Are you sure you want to delete this record?', string $title = 'Delete', ?string $extraClass = null): HtmlString
+    function btn_delete(string $url, ?string $confirmMessage = null, string $title = 'Delete', ?string $extraClass = null, ?string $recordName = null): HtmlString
     {
-        return ActionButtonHelper::delete($url, $confirmMessage, $title, $extraClass);
+        return ActionButtonHelper::delete($url, $confirmMessage, $title, $extraClass, $recordName);
     }
 }
 

@@ -167,4 +167,14 @@ abstract class SqlBaseRepository
 
         return (bool) $record->delete();
     }
+
+    /**
+     * Get table column names for the model.
+     *
+     * @return array
+     */
+    public function getTableColumns(): array
+    {
+        return $this->model->getConnection()->getSchemaBuilder()->getColumnListing($this->model->getTable());
+    }
 }

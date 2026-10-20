@@ -53,24 +53,38 @@ HTML;
     }
 
     /**
-     * Render the Delete action button with its form and confirmation modal/prompt.
+     * Render the Delete action button with its form and SweetAlert confirmation.
      *
      * @param string $url Target form action URL
-     * @param string $confirmMessage Confirmation message
+     * @param string|null $confirmMessage Optional custom confirmation message
      * @param string $title Tooltip and aria-label
      * @param string|null $extraClass Additional CSS classes
+     * @param string|null $recordName Name or title of the record to display in delete confirmation
      * @return HtmlString
      */
-    public static function delete(string $url, string $confirmMessage = 'Are you sure you want to delete this record?', string $title = 'Delete', ?string $extraClass = null): HtmlString
-    {
+    public static function delete(
+        string $url,
+        ?string $confirmMessage = null,
+        string $title = 'Delete',
+        ?string $extraClass = null,
+        ?string $recordName = null
+    ): HtmlString {
         $class = 'btn--icon' . ($extraClass ? ' ' . e($extraClass) : '');
         $safeUrl = e($url);
         $safeTitle = e($title);
-        $escapedConfirm = addslashes(htmlspecialchars($confirmMessage, ENT_QUOTES, 'UTF-8'));
         $csrfToken = csrf_token();
 
+        $defaultConfirm = $recordName
+            ? "Are you sure you want to delete {$recordName}?"
+            : ($confirmMessage ?? 'Are you sure you want to delete this record?');
+        $escapedConfirm = addslashes(htmlspecialchars($defaultConfirm, ENT_QUOTES, 'UTF-8'));
+
+        $safeRecordName = $recordName !== null ? e($recordName) : '';
+        $dataRecordAttr = $recordName !== null ? ' data-record-name="' . $safeRecordName . '"' : '';
+        $dataMsgAttr = $confirmMessage !== null ? ' data-swal-message="' . e($confirmMessage) . '"' : '';
+
         $html = <<<HTML
-<form action="{$safeUrl}" method="POST" style="display:inline;" onsubmit="return confirm('{$escapedConfirm}');">
+<form action="{$safeUrl}" method="POST" class="form-delete-swal" style="display:inline;"{$dataRecordAttr}{$dataMsgAttr}>
     <input type="hidden" name="_token" value="{$csrfToken}">
     <input type="hidden" name="_method" value="DELETE">
     <button type="submit" class="{$class}" title="{$safeTitle}" aria-label="{$safeTitle}" style="color:var(--danger, #ef4444);">
@@ -104,7 +118,13 @@ HTML;
         }
 
         if ($deleteUrl) {
-            $buttons[] = self::delete($deleteUrl, $options['confirm_delete'] ?? 'Are you sure you want to delete this record?', $options['delete_title'] ?? 'Delete');
+            $buttons[] = self::delete(
+                $deleteUrl,
+                $options['confirm_delete'] ?? null,
+                $options['delete_title'] ?? 'Delete',
+                $options['extra_class'] ?? null,
+                $options['record_name'] ?? null
+            );
         }
 
         $html = '<div class="data-cell-actions" style="justify-content: flex-end;">' . implode(' ', $buttons) . '</div>';

@@ -83,7 +83,7 @@
                 <a href="{{ route('admin.users.index') }}" class="btn btn--ghost">{{ __('form.back') }}</a>
                 <span class="spacer"></span>
                 <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn--primary">{{ __('label.edit_user') }}</a>
-                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="form-delete-swal" data-record-name="{{ $user->name ?? $user->username ?? 'this user' }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn--ghost" style="color:var(--danger, #ef4444); border-color: rgba(239, 68, 68, 0.2);">

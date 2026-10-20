@@ -50,7 +50,8 @@ class AdminPagesTest extends TestCase
         $response = $this->actingAs($user)->get('/admin/dashboard');
 
         $response->assertStatus(200);
-        $response->assertSee('Dashboard · ISUZU Admin Panel');
+        $appName = config('app.name', env('APP_NAME', 'ISUZU'));
+        $response->assertSee("Dashboard · {$appName} Admin Panel");
         $response->assertSee('themes/admin/2026.5a84696f.js');
         $response->assertSee('d-sidebar');
         $response->assertSee('d-topbar');

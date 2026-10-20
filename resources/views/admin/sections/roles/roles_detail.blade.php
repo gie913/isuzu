@@ -38,24 +38,51 @@
             </div>
 
             <div class="form-grid">
-                <div class="field span-2">
+                <div class="field">
+                    <label class="field-label">Code</label>
+                    <input class="input" type="text" value="{{ $item->code }}" readonly disabled style="font-family: var(--font-mono, monospace);">
+                </div>
+
+                <div class="field">
                     <label class="field-label">{{ __('label.name') }}</label>
                     <input class="input" type="text" value="{{ $item->name }}" readonly disabled>
                 </div>
 
-                <div class="field span-2">
-                    <label class="field-label">Description</label>
-                    <textarea class="textarea" readonly disabled>{{ $item->description ?? '-' }}</textarea>
+                <div class="field">
+                    <label class="field-label">Order Number</label>
+                    <input class="input" type="text" value="{{ $item->order_number }}" readonly disabled>
                 </div>
 
                 <div class="field">
-                    <label class="field-label">ID (UUID)</label>
-                    <input class="input" type="text" value="{{ $item->id }}" readonly disabled style="font-family: var(--font-mono, monospace); font-size: 12px;">
+                    <label class="field-label">Is Verifier</label>
+                    <input class="input" type="text" value="{{ $item->is_verifier ? 'Yes' : 'No' }}" readonly disabled>
+                </div>
+
+                <!-- Audit & System Meta Separator -->
+                <div class="field span-2" style="margin-top: 10px; padding-top: 16px; border-top: 1px dashed var(--border, #e2e8f0);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="eyebrow" style="color: var(--t-light, #64748b);">Audit & System Information</span>
+                    </div>
                 </div>
 
                 <div class="field">
                     <label class="field-label">{{ __('label.created_at') }}</label>
                     <input class="input" type="text" value="{{ $item->created_at ? $item->created_at->format('Y-m-d H:i:s') : '-' }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Created By</label>
+                    <input class="input" type="text" value="{{ $item->creator ? ($item->creator->name . ($item->creator->username ? ' (@' . $item->creator->username . ')' : '')) : ($item->created_by ?? '-') }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Updated At</label>
+                    <input class="input" type="text" value="{{ $item->updated_at ? $item->updated_at->format('Y-m-d H:i:s') : '-' }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Updated By</label>
+                    <input class="input" type="text" value="{{ $item->updater ? ($item->updater->name . ($item->updater->username ? ' (@' . $item->updater->username . ')' : '')) : ($item->updated_by ?? '-') }}" readonly disabled>
                 </div>
             </div>
 
@@ -63,7 +90,7 @@
                 <a href="{{ route('admin.roles.index') }}" class="btn btn--ghost">{{ __('form.back') }}</a>
                 <span class="spacer"></span>
                 <a href="{{ route('admin.roles.edit', $item->id) }}" class="btn btn--primary">Edit Role</a>
-                <form action="{{ route('admin.roles.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                <form action="{{ route('admin.roles.destroy', $item->id) }}" method="POST" class="form-delete-swal" data-record-name="{{ $item->name ?? 'Role' }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn--ghost" style="color:var(--danger, #ef4444); border-color: rgba(239, 68, 68, 0.2);">

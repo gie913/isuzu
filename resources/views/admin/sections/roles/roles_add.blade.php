@@ -47,20 +47,47 @@
             <form id="addForm" action="{{ route('admin.roles.store') }}" method="POST">
                 @csrf
                 <div class="form-grid">
-                    <div class="field span-2">
+                    <div class="field">
+                        <label class="field-label" for="code">
+                            Code <span class="req">*</span>
+                        </label>
+                        <input id="code" name="code" class="input @error('code') is-invalid @enderror" type="text" placeholder="e.g. admin, manager, staff" value="{{ old('code') }}" required>
+                        <div class="field-help">Unique role identifier code.</div>
+                        @error('code')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="field">
                         <label class="field-label" for="name">
                             {{ __('form.name') }} <span class="req">*</span>
                         </label>
-                        <input id="name" name="name" class="input @error('name') is-invalid @enderror" type="text" placeholder="Enter Role name" value="{{ old('name') }}" required>
+                        <input id="name" name="name" class="input @error('name') is-invalid @enderror" type="text" placeholder="e.g. Administrator, Manager" value="{{ old('name') }}" required>
+                        <div class="field-help">Display name of the role.</div>
                         @error('name')
                             <div class="field-error">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="field span-2">
-                        <label class="field-label" for="description">Description</label>
-                        <textarea id="description" name="description" class="textarea @error('description') is-invalid @enderror" placeholder="Optional brief details...">{{ old('description') }}</textarea>
-                        @error('description')
+                    <div class="field">
+                        <label class="field-label" for="order_number">
+                            Order Number <span class="req">*</span>
+                        </label>
+                        <input id="order_number" name="order_number" class="input @error('order_number') is-invalid @enderror" type="number" placeholder="e.g. 1, 2, 3" value="{{ old('order_number', 1) }}" required>
+                        <div class="field-help">Priority sequence for role ordering.</div>
+                        @error('order_number')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="field">
+                        <label class="field-label" for="is_verifier">Is Verifier</label>
+                        <select id="is_verifier" name="is_verifier" class="input @error('is_verifier') is-invalid @enderror">
+                            <option value="0" {{ old('is_verifier', 0) == 0 ? 'selected' : '' }}>No</option>
+                            <option value="1" {{ old('is_verifier') == 1 ? 'selected' : '' }}>Yes</option>
+                        </select>
+                        <div class="field-help">Indicates if this role has verifier privileges.</div>
+                        @error('is_verifier')
                             <div class="field-error">{{ $message }}</div>
                         @enderror
                     </div>

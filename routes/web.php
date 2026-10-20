@@ -62,6 +62,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Web\RoleController::class, 'update'])->name('update');
             Route::delete('/{id}', [\App\Http\Controllers\Web\RoleController::class, 'destroy'])->name('destroy');
         });
+                // Module Module
+        Route::prefix('modules')->name('modules.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\ModuleController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\ModuleController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\ModuleController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\ModuleController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\ModuleController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\ModuleController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\ModuleController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\ModuleController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\ModuleController::class, 'destroy'])->name('destroy');
+        });
         /*==new route==*/
     });
      

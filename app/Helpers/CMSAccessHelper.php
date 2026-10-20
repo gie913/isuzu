@@ -2,32 +2,32 @@
 
 namespace App\Helpers;
 
-use App\Services\CMSAccessService;
-use App\Services\CMSMenuService;
+use App\Services\ModuleAccessService;
+use App\Services\ModuleService;
 use Illuminate\Support\Facades\Auth;
 use stdClass;
 
 class CMSAccessHelper
 {
-    private $cms_access_service;
-    private $cms_menu_service;
+    private $module_access_service;
+    private $module_service;
 
     public function __construct(
-        CMSAccessService $cms_access_service,
-        CMSMenuService $cms_menu_service
+        ModuleAccessService $module_access_service,
+        ModuleService $module_service
     ) {
-        $this->cms_access_service = $cms_access_service;
-        $this->cms_menu_service = $cms_menu_service;
+        $this->module_access_service = $module_access_service;
+        $this->module_service = $module_service;
     }
 
     public function findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code)
     {
-        $page_access = $this->cms_access_service->findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code);
+        $page_access = $this->module_access_service->findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code);
         if ($page_access['success'] == true) {
             $page_access_obj = $page_access['data'];
             if ($page_access_obj->is_submenu == 1) {
                 // get parent of sub menu
-                $parent_menu = $this->cms_menu_service->find($page_access_obj->submenu_from_id)['data'];
+                $parent_menu = $this->module_service->find($page_access_obj->submenu_from_id)['data'];
                 $level_1_menu = $parent_menu?->name ?? $m_cms_menu_code;
             } else {
                 $parent_menu = null;
@@ -54,7 +54,7 @@ class CMSAccessHelper
 
     public function findMenuNameById($m_page_menu_id)
     {
-        return $this->cms_menu_service->find($m_page_menu_id);
+        return $this->module_service->find($m_page_menu_id);
     }
 
     /**

@@ -115,7 +115,7 @@
 </main>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const endpoint = "{!! $ajaxEndpoint !!}";
@@ -354,4 +354,4 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchTableData();
 });
 </script>
-@endpush
+@endsection

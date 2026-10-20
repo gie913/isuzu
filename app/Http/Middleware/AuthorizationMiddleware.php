@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Facades\CMSAccess;
+use App\Facades\ModuleAccess;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +17,8 @@ class AuthorizationMiddleware
      */
     public function handle(Request $request, Closure $next, ?string $module = null, string $action = 'can_read'): Response
     {
-        if ($module && class_exists(CMSAccess::class)) {
-            if (!CMSAccess::can($module, $action)) {
+        if ($module && class_exists(ModuleAccess::class)) {
+            if (!ModuleAccess::can($module, $action)) {
                 if ($request->expectsJson()) {
                     return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
                 }

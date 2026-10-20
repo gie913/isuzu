@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class CodeGeneratorCommand extends Command
@@ -69,7 +70,7 @@ class CodeGeneratorCommand extends Command
         $this->generateWebController($entity, $moduleKey, $pluralKey, $titleName, $pluralTitle);
 
         // 7. Blade Views (List Client, List Ajax, Add, Edit, Detail)
-        $this->generateViews($pluralKey, $titleName, $pluralTitle);
+        $this->generateViews($pluralKey, $titleName, $pluralTitle, $tableName);
 
         // 8. Lang files
         $this->generateLangFiles($moduleKey, $titleName, $pluralTitle);
@@ -98,6 +99,7 @@ class CodeGeneratorCommand extends Command
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -124,6 +126,22 @@ class {$entity} extends Model
         return [
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * User who created the record.
+     */
+    public function creator()
+    {
+        return \$this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    /**
+     * User who last updated the record.
+     */
+    public function updater()
+    {
+        return \$this->belongsTo(User::class, 'updated_by', 'id');
     }
 }
 PHP;
@@ -194,6 +212,21 @@ class Sql{$entity}Repository extends SqlBaseRepository
     public function __construct({$entity} \$model)
     {
         parent::__construct(\$model);
+    }
+
+    /**
+     * Find record by ID with creator and updater relationships.
+     *
+     * @param string|int \$id
+     * @return {$entity}|null
+     */
+    public function find(string|int \$id): ?\Illuminate\Database\Eloquent\Model
+    {
+        return \$this->model->newQuery()
+            ->with(['creator', 'updater'])
+            ->where('id', \$id)
+            ->where('is_active', true)
+            ->first();
     }
 }
 PHP;
@@ -366,7 +399,7 @@ PHP;
 
 namespace App\Http\Controllers\Web;
 
-use App\Facades\CMSAccess;
+use App\Facades\ModuleAccess;
 use App\Http\Controllers\Controller;
 use App\Services\\{$entity}Service;
 use Illuminate\Http\JsonResponse;
@@ -388,7 +421,7 @@ class {$entity}Controller extends Controller
      */
     public function index(Request \$request): View
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -410,7 +443,7 @@ class {$entity}Controller extends Controller
      */
     public function listAjaxView(Request \$request): View
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -431,7 +464,7 @@ class {$entity}Controller extends Controller
      */
     public function listAjaxData(Request \$request): JsonResponse
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
             return response()->json(['message' => 'Unauthorized module access.'], 403);
         }
 
@@ -457,7 +490,7 @@ class {$entity}Controller extends Controller
             \$actionsHtml = '<div class="data-cell-actions" style="justify-content: flex-end;">'
                 . btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') . ' '
                 . btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') . ' '
-                . btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), 'Are you sure you want to delete this {$titleName}?', 'Delete {$titleName}')
+                . btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->name ?? '{$titleName}')
                 . '</div>';
 
             return [
@@ -493,7 +526,7 @@ class {$entity}Controller extends Controller
 
     public function add(): View
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_create')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_create')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -509,7 +542,7 @@ class {$entity}Controller extends Controller
 
     public function show(string \$id): View
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_read')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -531,7 +564,7 @@ class {$entity}Controller extends Controller
 
     public function edit(string \$id): View
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_update')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_update')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -553,7 +586,7 @@ class {$entity}Controller extends Controller
 
     public function store(Request \$request): RedirectResponse
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_create')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_create')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -569,7 +602,7 @@ class {$entity}Controller extends Controller
 
     public function update(Request \$request, string \$id): RedirectResponse
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_update')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_update')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -585,7 +618,7 @@ class {$entity}Controller extends Controller
 
     public function destroy(string \$id): RedirectResponse
     {
-        if (!CMSAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_delete')) {
+        if (!ModuleAccess::can(\$this->{$serviceVar}->findModuleCode(), 'can_delete')) {
             abort(403, 'Unauthorized module access.');
         }
 
@@ -604,12 +637,24 @@ PHP;
         $this->info("Created: app/Http/Controllers/Web/{$entity}Controller.php");
     }
 
-    protected function generateViews(string $pluralKey, string $titleName, string $pluralTitle): void
+    protected function generateViews(string $pluralKey, string $titleName, string $pluralTitle, ?string $tableName = null): void
     {
         $dir = resource_path("views/admin/sections/{$pluralKey}");
         File::ensureDirectoryExists($dir);
 
-        // 1. List View (Client-side)
+        // Introspect table columns if table exists
+        $columns = [];
+        if ($tableName && Schema::hasTable($tableName)) {
+            $columns = Schema::getColumnListing($tableName);
+        }
+
+        // Exclude default fields: id, created_at, created_by, updated_at, updated_by, is_active
+        $excluded = ['id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'is_active'];
+        $formColumns = array_values(array_filter($columns, fn($col) => !in_array($col, $excluded)));
+
+        if (empty($formColumns)) {
+            $formColumns = ['name', 'description'];
+        }
         $listFile = "{$dir}/{$pluralKey}_list.blade.php";
         if (!File::exists($listFile)) {
             $listContent = <<<BLADE
@@ -618,6 +663,9 @@ PHP;
     'activeMenu' => '{$pluralKey}',
     'breadcrumbsText' => 'Workspace | {$pluralTitle}'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
@@ -678,9 +726,6 @@ PHP;
                             </th>
                             <th>{{ __('label.name') }}</th>
                             <th>Description</th>
-                            <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.id') }}</th>
-                            <th>{{ __('label.created_at') }}</th>
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
@@ -708,33 +753,16 @@ PHP;
                                 </td>
                                 <td>{{ \$item->description ?? '-' }}</td>
                                 <td>
-                                    @if(\$item->is_active)
-                                        <span class="badge success dot">{{ __('label.active') }}</span>
-                                    @else
-                                        <span class="badge dot" style="color:var(--t-light)">{{ __('label.inactive') }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="data-cell-mono" title="{{ \$item->id }}">
-                                        {{ substr(\$item->id, 0, 8) }}…
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="data-cell-mono">
-                                        {{ \$item->created_at ? \$item->created_at->format('M d · H:i') : '-' }}
-                                    </span>
-                                </td>
-                                <td>
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') }}
                                         {{ btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') }}
-                                        {{ btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), 'Are you sure you want to delete this record?', 'Delete {$titleName}') }}
+                                        {{ btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->name ?? '{$titleName}') }}
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                                <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
                                     {{ __('message.not_found') }}
                                 </td>
                             </tr>
@@ -753,7 +781,7 @@ PHP;
 </main>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
@@ -789,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-@endpush
+@endsection
 BLADE;
             File::put($listFile, $listContent);
             $this->info("Created: resources/views/admin/sections/{$pluralKey}/{$pluralKey}_list.blade.php");
@@ -804,6 +832,9 @@ BLADE;
     'activeMenu' => '{$pluralKey}',
     'breadcrumbsText' => 'Workspace | {$pluralTitle} | Server-Side Ajax'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
@@ -873,17 +904,12 @@ BLADE;
                                 {{ __('label.name') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
                             </th>
                             <th>Description</th>
-                            <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.id') }}</th>
-                            <th class="is-sortable" data-sort="created_at" style="cursor:pointer;">
-                                {{ __('label.created_at') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
-                            </th>
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody id="ajaxTableBody">
                         <tr>
-                            <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                            <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
                                 Loading data from server…
                             </td>
                         </tr>
@@ -909,10 +935,10 @@ BLADE;
 </main>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const endpoint = "{!! \$ajaxEndpoint !!}";
+    const endpoint = "{!\$ajaxEndpoint!}";
     const tbody = document.getElementById('ajaxTableBody');
     const searchInput = document.getElementById('ajaxSearchInput');
     const perPageSelect = document.getElementById('ajaxPerPageSelect');
@@ -961,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => {
             console.error('Ajax Table Error:', err);
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
             if (spinner) spinner.style.display = 'none';
         });
     }
@@ -971,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalBadge.textContent = `\${response.total} items`;
 
         if (response.total === 0 || rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
             pagingInfo.innerHTML = `Showing <strong style="color:var(--t-base)">0</strong> of <strong style="color:var(--t-base)">0</strong>`;
             return;
         }
@@ -998,9 +1024,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </td>
                     <td>\${item.description}</td>
-                    <td>\${item.status_html}</td>
-                    <td><span class="data-cell-mono" title="\${item.id}">\${item.short_id}</span></td>
-                    <td><span class="data-cell-mono">\${item.created_at}</span></td>
                     <td>\${item.actions}</td>
                 </tr>
             `;
@@ -1127,10 +1150,42 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchTableData();
 });
 </script>
-@endpush
+@endsection
 BLADE;
             File::put($listAjaxFile, $listAjaxContent);
             $this->info("Created: resources/views/admin/sections/{$pluralKey}/{$pluralKey}_list_ajax.blade.php");
+        }
+
+        // Build Add form fields
+        $addFieldsHtml = "";
+        foreach ($formColumns as $col) {
+            $colLabel = Str::headline($col);
+            $spanClass = ($col === 'description' || count($formColumns) === 1) ? ' span-2' : '';
+            if ($col === 'description') {
+                $addFieldsHtml .= <<<HTML
+
+                    <div class="field{$spanClass}">
+                        <label class="field-label" for="{$col}">{$colLabel}</label>
+                        <textarea id="{$col}" name="{$col}" class="textarea @error('{$col}') is-invalid @enderror" placeholder="Optional details...">{{ old('{$col}') }}</textarea>
+                        @error('{$col}')
+                            <div class="field-error">{{ \$message }}</div>
+                        @enderror
+                    </div>
+HTML;
+            } else {
+                $addFieldsHtml .= <<<HTML
+
+                    <div class="field{$spanClass}">
+                        <label class="field-label" for="{$col}">
+                            {$colLabel} <span class="req">*</span>
+                        </label>
+                        <input id="{$col}" name="{$col}" class="input @error('{$col}') is-invalid @enderror" type="text" placeholder="Enter {$colLabel}" value="{{ old('{$col}') }}" required>
+                        @error('{$col}')
+                            <div class="field-error">{{ \$message }}</div>
+                        @enderror
+                    </div>
+HTML;
+            }
         }
 
         // 3. Add View
@@ -1142,6 +1197,9 @@ BLADE;
     'activeMenu' => '{$pluralKey}',
     'breadcrumbsText' => 'Workspace | {$pluralTitle} | Add {$titleName}'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
@@ -1185,24 +1243,7 @@ BLADE;
 
             <form id="addForm" action="{{ route('admin.{$pluralKey}.store') }}" method="POST">
                 @csrf
-                <div class="form-grid">
-                    <div class="field span-2">
-                        <label class="field-label" for="name">
-                            {{ __('form.name') }} <span class="req">*</span>
-                        </label>
-                        <input id="name" name="name" class="input @error('name') is-invalid @enderror" type="text" placeholder="Enter {$titleName} name" value="{{ old('name') }}" required>
-                        @error('name')
-                            <div class="field-error">{{ \$message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="field span-2">
-                        <label class="field-label" for="description">Description</label>
-                        <textarea id="description" name="description" class="textarea @error('description') is-invalid @enderror" placeholder="Optional brief details...">{{ old('description') }}</textarea>
-                        @error('description')
-                            <div class="field-error">{{ \$message }}</div>
-                        @enderror
-                    </div>
+                <div class="form-grid">{$addFieldsHtml}
                 </div>
 
                 <div class="form-actions" style="margin-top: 24px;">
@@ -1215,9 +1256,44 @@ BLADE;
     </div>
 </main>
 @endsection
+
+@section('js')
+@endsection
 BLADE;
             File::put($addFile, $addContent);
             $this->info("Created: resources/views/admin/sections/{$pluralKey}/{$pluralKey}_add.blade.php");
+        }
+
+        // Build Edit form fields
+        $editFieldsHtml = "";
+        foreach ($formColumns as $col) {
+            $colLabel = Str::headline($col);
+            $spanClass = ($col === 'description' || count($formColumns) === 1) ? ' span-2' : '';
+            if ($col === 'description') {
+                $editFieldsHtml .= <<<HTML
+
+                    <div class="field{$spanClass}">
+                        <label class="field-label" for="{$col}">{$colLabel}</label>
+                        <textarea id="{$col}" name="{$col}" class="textarea @error('{$col}') is-invalid @enderror">{{ old('{$col}', \$item->{$col}) }}</textarea>
+                        @error('{$col}')
+                            <div class="field-error">{{ \$message }}</div>
+                        @enderror
+                    </div>
+HTML;
+            } else {
+                $editFieldsHtml .= <<<HTML
+
+                    <div class="field{$spanClass}">
+                        <label class="field-label" for="{$col}">
+                            {$colLabel} <span class="req">*</span>
+                        </label>
+                        <input id="{$col}" name="{$col}" class="input @error('{$col}') is-invalid @enderror" type="text" value="{{ old('{$col}', \$item->{$col}) }}" required>
+                        @error('{$col}')
+                            <div class="field-error">{{ \$message }}</div>
+                        @enderror
+                    </div>
+HTML;
+            }
         }
 
         // 4. Edit View
@@ -1230,13 +1306,16 @@ BLADE;
     'breadcrumbsText' => 'Workspace | {$pluralTitle} | Edit {$titleName}'
 ])
 
+@section('css')
+@endsection
+
 @section('content')
 <main class="content">
     <section class="hero">
         <div class="hero-text">
             <span class="eyebrow">Workspace · {$pluralTitle}</span>
             <h1 class="hero-title">Edit {$titleName}</h1>
-            <p class="hero-sub">Update record details for <strong>{{ \$item->name }}</strong>.</p>
+            <p class="hero-sub">Update record details for <strong>{{ \$item->name ?? 'Record' }}</strong>.</p>
         </div>
         <div class="hero-actions">
             <a href="{{ route('admin.{$pluralKey}.index') }}" class="btn btn--ghost">
@@ -1276,24 +1355,7 @@ BLADE;
             <form id="editForm" action="{{ route('admin.{$pluralKey}.update', \$item->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="form-grid">
-                    <div class="field span-2">
-                        <label class="field-label" for="name">
-                            {{ __('form.name') }} <span class="req">*</span>
-                        </label>
-                        <input id="name" name="name" class="input @error('name') is-invalid @enderror" type="text" value="{{ old('name', \$item->name) }}" required>
-                        @error('name')
-                            <div class="field-error">{{ \$message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="field span-2">
-                        <label class="field-label" for="description">Description</label>
-                        <textarea id="description" name="description" class="textarea @error('description') is-invalid @enderror">{{ old('description', \$item->description) }}</textarea>
-                        @error('description')
-                            <div class="field-error">{{ \$message }}</div>
-                        @enderror
-                    </div>
+                <div class="form-grid">{$editFieldsHtml}
                 </div>
 
                 <div class="form-actions" style="margin-top: 24px;">
@@ -1306,9 +1368,36 @@ BLADE;
     </div>
 </main>
 @endsection
+
+@section('js')
+@endsection
 BLADE;
             File::put($editFile, $editContent);
             $this->info("Created: resources/views/admin/sections/{$pluralKey}/{$pluralKey}_edit.blade.php");
+        }
+
+        // Build Detail fields
+        $detailFieldsHtml = "";
+        foreach ($formColumns as $col) {
+            $colLabel = Str::headline($col);
+            $spanClass = ($col === 'description' || count($formColumns) === 1) ? ' span-2' : '';
+            if ($col === 'description') {
+                $detailFieldsHtml .= <<<HTML
+
+                <div class="field{$spanClass}">
+                    <label class="field-label">{$colLabel}</label>
+                    <textarea class="textarea" readonly disabled>{{ \$item->{$col} ?? '-' }}</textarea>
+                </div>
+HTML;
+            } else {
+                $detailFieldsHtml .= <<<HTML
+
+                <div class="field{$spanClass}">
+                    <label class="field-label">{$colLabel}</label>
+                    <input class="input" type="text" value="{{ \$item->{$col} }}" readonly disabled>
+                </div>
+HTML;
+            }
         }
 
         // 5. Detail View
@@ -1321,12 +1410,15 @@ BLADE;
     'breadcrumbsText' => 'Workspace | {$pluralTitle} | Details'
 ])
 
+@section('css')
+@endsection
+
 @section('content')
 <main class="content">
     <section class="hero">
         <div class="hero-text">
             <span class="eyebrow">Workspace · {$pluralTitle}</span>
-            <h1 class="hero-title">{{ \$item->name }}</h1>
+            <h1 class="hero-title">{{ \$item->name ?? 'Record' }}</h1>
             <p class="hero-sub">Complete details and metadata overview.</p>
         </div>
         <div class="hero-actions">
@@ -1354,25 +1446,33 @@ BLADE;
                 @endif
             </div>
 
-            <div class="form-grid">
-                <div class="field span-2">
-                    <label class="field-label">{{ __('label.name') }}</label>
-                    <input class="input" type="text" value="{{ \$item->name }}" readonly disabled>
-                </div>
+            <div class="form-grid">{$detailFieldsHtml}
 
-                <div class="field span-2">
-                    <label class="field-label">Description</label>
-                    <textarea class="textarea" readonly disabled>{{ \$item->description ?? '-' }}</textarea>
-                </div>
-
-                <div class="field">
-                    <label class="field-label">ID (UUID)</label>
-                    <input class="input" type="text" value="{{ \$item->id }}" readonly disabled style="font-family: var(--font-mono, monospace); font-size: 12px;">
+                <!-- Audit & System Meta Separator -->
+                <div class="field span-2" style="margin-top: 10px; padding-top: 16px; border-top: 1px dashed var(--border, #e2e8f0);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="eyebrow" style="color: var(--t-light, #64748b);">Audit & System Information</span>
+                    </div>
                 </div>
 
                 <div class="field">
                     <label class="field-label">{{ __('label.created_at') }}</label>
                     <input class="input" type="text" value="{{ \$item->created_at ? \$item->created_at->format('Y-m-d H:i:s') : '-' }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Created By</label>
+                    <input class="input" type="text" value="{{ \$item->creator ? (\$item->creator->name . (\$item->creator->username ? ' (@' . \$item->creator->username . ')' : '')) : (\$item->created_by ?? '-') }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Updated At</label>
+                    <input class="input" type="text" value="{{ \$item->updated_at ? \$item->updated_at->format('Y-m-d H:i:s') : '-' }}" readonly disabled>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Updated By</label>
+                    <input class="input" type="text" value="{{ \$item->updater ? (\$item->updater->name . (\$item->updater->username ? ' (@' . \$item->updater->username . ')' : '')) : (\$item->updated_by ?? '-') }}" readonly disabled>
                 </div>
             </div>
 
@@ -1380,7 +1480,7 @@ BLADE;
                 <a href="{{ route('admin.{$pluralKey}.index') }}" class="btn btn--ghost">{{ __('form.back') }}</a>
                 <span class="spacer"></span>
                 <a href="{{ route('admin.{$pluralKey}.edit', \$item->id) }}" class="btn btn--primary">Edit {$titleName}</a>
-                <form action="{{ route('admin.{$pluralKey}.destroy', \$item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                <form action="{{ route('admin.{$pluralKey}.destroy', \$item->id) }}" method="POST" class="form-delete-swal" data-record-name="{{ \$item->name ?? '{$titleName}' }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn--ghost" style="color:var(--danger, #ef4444); border-color: rgba(239, 68, 68, 0.2);">
@@ -1391,6 +1491,9 @@ BLADE;
         </section>
     </div>
 </main>
+@endsection
+
+@section('js')
 @endsection
 BLADE;
             File::put($detailFile, $detailContent);

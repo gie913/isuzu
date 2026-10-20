@@ -143,4 +143,14 @@ abstract class BaseService
             'message' => $message,
         ];
     }
+
+    /**
+     * Get table column names from the repository.
+     *
+     * @return array
+     */
+    public function getTableColumns(): array
+    {
+        return $this->repository->getTableColumns();
+    }
 }

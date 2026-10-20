@@ -120,7 +120,7 @@
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.users.show', $user->id), 'View details') }}
                                         {{ btn_edit(route('admin.users.edit', $user->id), 'Edit user') }}
-                                        {{ btn_delete(route('admin.users.destroy', $user->id), 'Are you sure you want to delete this user?', 'Delete user') }}
+                                        {{ btn_delete(route('admin.users.destroy', $user->id), null, 'Delete user', null, $user->name ?? $user->username ?? 'this user') }}
                                     </div>
                                 </td>
                             </tr>
@@ -145,7 +145,7 @@
 </main>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('userSearchInput');
@@ -192,4 +192,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-@endpush
+@endsection

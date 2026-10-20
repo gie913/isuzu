@@ -1,0 +1,69 @@
+{
+  "_from": "flag-icons",
+  "_id": "flag-icons@6.1.1",
+  "_inBundle": false,
+  "_integrity": "sha512-7QJaPXelUF5yLKppUvfqx915oLm2q6DVM037vrBzww4DjwzyVPooq74SLfPPsYabbN3kMPbDQstYjHrx8kBUPg==",
+  "_location": "/flag-icons",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "flag-icons",
+    "name": "flag-icons",
+    "escapedName": "flag-icons",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/flag-icons/-/flag-icons-6.1.1.tgz",
+  "_shasum": "8d6cee1534b05da3cdc103f5f8bdeb3003164e05",
+  "_spec": "flag-icons",
+  "_where": "C:\\laragon\\www\\tes",
+  "author": {
+    "name": "Panayiotis Lipiridis",
+    "email": "lipiridis@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/lipis/flag-icons/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "> A curated collection of all country flags in SVG — plus the CSS for easier integration. See the [demo](https://flagicons.lipis.dev).",
+  "devDependencies": {
+    "http-server": "14.1.0",
+    "less": "4.1.2",
+    "prettier": "2.5.1",
+    "svgo": "2.8.0"
+  },
+  "files": [
+    "css",
+    "flags",
+    "less",
+    "sass",
+    "country.json"
+  ],
+  "homepage": "https://github.com/lipis/flag-icons#readme",
+  "license": "MIT",
+  "name": "flag-icons",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lipis/flag-icons.git"
+  },
+  "scripts": {
+    "build": "yarn build:dev && yarn build:min",
+    "build:dev": "lessc less/flag-icons.less > css/flag-icons.css",
+    "build:min": "lessc -x less/flag-icons.less > css/flag-icons.min.css",
+    "fix": "yarn prettier --write",
+    "prettier": "prettier \"**/*.{html,json,md,scss,less,yaml,yml}\"",
+    "start": "http-server -a localhost -p 8000",
+    "svgo": "svgo --pretty --indent=2 --precision=1",
+    "svgo:all": "find flags | grep '\\.svg$' | xargs -Iz -n 1 yarn svgo z",
+    "svgo:min": "find flags | grep '\\.svg$' | xargs -Iz -n 1 svgo z",
+    "test": "yarn prettier --list-different"
+  },
+  "version": "6.1.1"
+}

@@ -15,4 +15,5 @@ return [
     'created_at'      => 'Created At',
     'test_module' => 'Test Module',
     'role' => 'Role',
+    'module' => 'Module',
 ];

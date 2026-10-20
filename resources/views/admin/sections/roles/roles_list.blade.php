@@ -113,7 +113,7 @@
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.roles.show', $item->id), 'View details') }}
                                         {{ btn_edit(route('admin.roles.edit', $item->id), 'Edit Role') }}
-                                        {{ btn_delete(route('admin.roles.destroy', $item->id), 'Are you sure you want to delete this record?', 'Delete Role') }}
+                                        {{ btn_delete(route('admin.roles.destroy', $item->id), null, 'Delete Role', null, $item->name ?? 'Role') }}
                                     </div>
                                 </td>
                             </tr>
@@ -138,7 +138,7 @@
 </main>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
@@ -174,4 +174,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-@endpush
+@endsection

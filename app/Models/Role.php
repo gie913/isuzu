@@ -16,8 +16,10 @@ class Role extends Model
 
     protected $fillable = [
         'id',
+        'code',
         'name',
-        'description',
+        'is_verifier',
+        'order_number',
         'is_active',
         'created_by',
         'updated_by',
@@ -26,7 +28,19 @@ class Role extends Model
     protected function casts(): array
     {
         return [
+            'is_verifier' => 'boolean',
             'is_active' => 'boolean',
+            'order_number' => 'integer',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 }

@@ -36,8 +36,10 @@ class RoleController extends BaseController
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'code'         => 'required|string|max:50',
+            'name'         => 'required|string|max:255',
+            'order_number' => 'required|integer',
+            
         ]);
 
         if ($validator->fails()) {
@@ -51,8 +53,10 @@ class RoleController extends BaseController
     public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name'        => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
+            'code'         => 'sometimes|string|max:50',
+            'name'         => 'sometimes|string|max:255',
+            'order_number' => 'sometimes|integer',
+            
         ]);
 
         if ($validator->fails()) {
