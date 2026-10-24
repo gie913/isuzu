@@ -10,14 +10,50 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Frontend Landing Page (Index)
 Route::get('/', function () {
-    return redirect()->route('admin.dashboard');
+    return view('frontend.index');
+})->name('index');
+
+// Backward compatibility for /mockup
+Route::get('/mockup', function () {
+    return redirect()->route('index');
 });
 
-// Mockup Landing Page (Cloned from AutoCare Index-4)
-Route::get('/mockup', function () {
-    return view('frontend.index');
-})->name('mockup');
+// Frontend Produk Page
+Route::get('/produk', function () {
+    return view('frontend.produk');
+})->name('produk');
+
+// Frontend Detail Produk Page
+Route::get('/detail-produk', function () {
+    return view('frontend.detail_produk');
+})->name('detail-produk');
+
+// Frontend Layanan Page
+Route::get('/layanan', function () {
+    return view('frontend.layanan');
+})->name('layanan');
+
+// Frontend Sparepart Page
+Route::get('/sparepart', function () {
+    return view('frontend.sparepart');
+})->name('sparepart');
+
+// Frontend Berita / News Page
+Route::get('/news', function () {
+    return view('frontend.news');
+})->name('news');
+
+// Frontend Brosur Page
+Route::get('/brosur', function () {
+    return view('frontend.brosur');
+})->name('brosur');
+
+// Frontend Kontak Page
+Route::get('/kontak', function () {
+    return view('frontend.kontak');
+})->name('kontak');
 
 // Fallback named route for standard Laravel auth redirection
 Route::get('/login', function () {

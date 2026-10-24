@@ -50,33 +50,18 @@
                     <!-- main nav -->
                     <div class="header-nav navbar-collapse collapse justify-content-end" id="navbarNavDropdown">
                         <ul class="nav navbar-nav nav-style">
-                            <li class="active"><a href="{{ url('/') }}">Beranda</a></li>
-                            <li class="has-mega-menu">
-                                <a href="javascript:void(0);">Produk <i class="fas fa-chevron-down"></i></a>
-                                <ul class="mega-menu">
-                                    <li>
-                                        <a href="javascript:void(0);">Produk</a>
-                                        <ul>
-                                            <li><a href="javascript:void(0);">Isuzu Giga</a></li>
-                                            <li><a href="javascript:void(0);">Isuzu Elf</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);">Service</a>
-                                        <ul>
-                                            <li><a href="javascript:void(0);">Area Service</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);">Sparepart</a>
-                                        <ul>
-                                            <li><a href="javascript:void(0);">Sparepart Isuzu</a></li>
-                                        </ul>
-                                    </li>
+                            <li class="{{ request()->is('/') || request()->is('mockup') ? 'active' : '' }}"><a href="{{ route('index') }}">Beranda</a></li>
+                            <li class="{{ request()->is('produk*') ? 'active' : '' }}"><a href="{{ route('produk') }}">Produk</a></li>
+                            <li class="{{ request()->is('layanan*') ? 'active' : '' }}"><a href="{{ route('layanan') }}">Layanan</a></li>
+                            <li class="{{ request()->is('sparepart*') ? 'active' : '' }}"><a href="{{ route('sparepart') }}">Sparepart</a></li>
+                            <li class="{{ request()->is('news*') || request()->is('brosur*') ? 'active' : '' }}">
+                                <a href="{{ route('news') }}">Informasi <i class="fas fa-chevron-down"></i></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{{ route('news') }}">Berita</a></li>
+                                    <li><a href="{{ route('brosur') }}">Brosur</a></li>
                                 </ul>
                             </li>
-                            <li><a href="javascript:void(0);">Informasi</a></li>
-                            <li><a href="javascript:void(0);">Kontak</a></li>
+                            <li class="{{ request()->is('kontak*') ? 'active' : '' }}"><a href="{{ route('kontak') }}">Kontak</a></li>
                         </ul>
                     </div>
                 </div>

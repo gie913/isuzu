@@ -1290,8 +1290,8 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6 col-sm-6 footer-col-4">
                         <div class="widget widget_about">
-                            <div class="logo-footer logo-white"><img src="images/logo.png" alt=""></div>
-                            <p><strong>Auto Care</strong> ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore agna aliquam erat . wisi enim ad minim veniam, quis tation. sit amet, consec tetuer.ipsum dolor sit amet, consectetuer.</p>
+                            <div class="logo-footer logo-white"><img src="images/logo_isuzu2.png" alt=""></div>
+                            <p><strong>ISUZU Jakarta</strong> ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore agna aliquam erat . wisi enim ad minim veniam, quis tation. sit amet, consec tetuer.ipsum dolor sit amet, consectetuer.</p>
                             <ul class="dlab-social-icon dez-border">
                                 <li><a class="fab fa-facebook-f" href="https://www.facebook.com/" target="blank"></a></li>
                                 <li><a class="fab fa-twitter" href="https://twitter.com/" target="blank"></a></li>

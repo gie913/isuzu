@@ -19,7 +19,7 @@
 	<link rel="shortcut icon" type="image/jpeg" href="{{ asset('assets/images/logo/x-icon.jpeg') }}">
 	
 	<!-- PAGE TITLE HERE -->
-	<title>Auto Care - Car Services Template</title>
+	<title>Isuzu Jakarta</title>
 	
 	<!-- MOBILE SPECIFIC -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,6 +34,7 @@
 	<link rel="stylesheet" type="text/css" href="css/templete.min.css">
 	<link class="skin"  rel="stylesheet" type="text/css" href="css/skin/skin-1.css">
 	<link class="skin"  rel="stylesheet" type="text/css" href="plugins/rangeslider/rangeslider.css">
+	<link rel="stylesheet" type="text/css" href="plugins/lightgallery/css/lightgallery.min.css">
 	<!-- Revolution Slider Css -->
 	<link rel="stylesheet" type="text/css" href="plugins/revolution/css/settings.css">
 	<link rel="stylesheet" type="text/css" href="plugins/revolution/css/navigation.css">
@@ -54,10 +55,97 @@
 			content: none !important;
 			background-image: none !important;
 		}
+
+		/* LightGallery controls fallback & visibility */
+		.lg-outer {
+			z-index: 9999999 !important;
+		}
+		.lg-backdrop {
+			z-index: 9999998 !important;
+		}
+		.lg-toolbar {
+			z-index: 9999999 !important;
+		}
+		.lg-toolbar .lg-icon {
+			cursor: pointer !important;
+		}
+		.lg-toolbar .lg-close:after {
+			font-family: lg, "Font Awesome 5 Free", sans-serif !important;
+		}
+
+		/* Global Inner Banner & Breadcrumb Styling */
+		.dlab-bnr-inr-entry .breadcrumb-row {
+			display: inline-block;
+			padding: 8px 24px !important;
+			border-radius: 30px !important;
+			background: linear-gradient(135deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.35) 100%) !important;
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
+			border: 1px solid rgba(255, 255, 255, 0.15) !important;
+			margin-top: 15px;
+		}
+		.dlab-bnr-inr-entry .breadcrumb-row ul {
+			margin: 0;
+			padding: 0;
+		}
+		.dlab-bnr-inr-entry .breadcrumb-row ul li {
+			color: rgba(255, 255, 255, 0.85);
+			font-weight: 500;
+		}
+		.dlab-bnr-inr-entry .breadcrumb-row ul li a {
+			color: #fff;
+		}
+		.dlab-bnr-inr-entry .breadcrumb-row ul li a:hover {
+			color: #e31e24;
+		}
+
+		/* Floating WhatsApp Button */
+		.float {
+			position: fixed;
+			width: 60px;
+			height: 60px;
+			bottom: 40px;
+			right: 40px;
+			background-color: #25d366;
+			color: #fff !important;
+			border-radius: 50px;
+			text-align: center;
+			font-size: 32px;
+			box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
+			z-index: 999999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-decoration: none;
+			transition: all 0.3s ease;
+		}
+		.float:hover {
+			background-color: #1ebe5d;
+			color: #fff !important;
+			transform: scale(1.08);
+			box-shadow: 2px 4px 14px rgba(37, 211, 102, 0.45);
+		}
+		.my-float {
+			margin-top: 0px;
+		}
+		@media (max-width: 767px) {
+			.float {
+				width: 50px;
+				height: 50px;
+				bottom: 25px;
+				right: 25px;
+				font-size: 26px;
+			}
+		}
+		#loading-area,
+		.loading-area,
+		.loader1 {
+			display: none !important;
+		}
 	</style>
     @yield('css')
 </head>
-<body id="bg"><div id="loading-area" class="loader1"></div>
+<body id="bg">
 
 <div class="page-wraper">
 
@@ -69,6 +157,11 @@
 
     <!-- scroll top button -->
     <button class="scroltop fas fa-arrow-up style4" ></button>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://api.whatsapp.com/send?phone=6281318941813&amp;text=Assalamu%20alaikum%2C%20saya%20ingin%20info%20lebih%20detail%20mengenai%20produk%20Isuzu%20yang%20anda%20tampilkan%20di%20website" class="float" target="_blank" rel="noopener noreferrer" title="Chat via WhatsApp">
+        <i class="fab fa-whatsapp my-float"></i>
+    </a>
 </div>
 <!-- JavaScript  files ========================================= -->
 <script src="js/jquery.min.js"></script><!-- JQUERY.MIN JS -->
@@ -107,6 +200,37 @@
 jQuery(document).ready(function() {
 	'use strict';
 	dz_rev_slider_4();
+
+	// Fallback handler for closing LightGallery on backdrop click, close button, or ESC key
+	jQuery(document).on('click', '.lg-close, .lg-backdrop', function() {
+		var $gallery = jQuery('#lightgallery, .lightgallery');
+		if ($gallery.data('lightGallery')) {
+			$gallery.data('lightGallery').destroy();
+		} else {
+			jQuery('.lg-outer').removeClass('lg-visible');
+			jQuery('.lg-backdrop').removeClass('in');
+			setTimeout(function() {
+				jQuery('.lg-outer, .lg-backdrop').remove();
+				jQuery('body').removeClass('lg-on lg-from-hash');
+			}, 300);
+		}
+	});
+
+	jQuery(document).on('keydown', function(e) {
+		if (e.keyCode === 27 && jQuery('.lg-outer').length) { // Escape key
+			var $gallery = jQuery('#lightgallery, .lightgallery');
+			if ($gallery.data('lightGallery')) {
+				$gallery.data('lightGallery').destroy();
+			} else {
+				jQuery('.lg-outer').removeClass('lg-visible');
+				jQuery('.lg-backdrop').removeClass('in');
+				setTimeout(function() {
+					jQuery('.lg-outer, .lg-backdrop').remove();
+					jQuery('body').removeClass('lg-on lg-from-hash');
+				}, 300);
+			}
+		}
+	});
 });	/*ready*/
 </script>
     @yield('js')
