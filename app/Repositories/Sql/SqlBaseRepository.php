@@ -93,8 +93,8 @@ abstract class SqlBaseRepository
             $attributes['id'] = (string) Str::uuid();
         }
 
-        if (empty($attributes['created_by']) && Auth::check()) {
-            $attributes['created_by'] = (string) Auth::id();
+        if (empty($attributes['created_by'])) {
+            $attributes['created_by'] = Auth::check() ? (string) Auth::id() : 'system';
         }
 
         if (!isset($attributes['is_active'])) {

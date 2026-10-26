@@ -1,16 +1,19 @@
 @extends('admin.layouts.theme', [
-    'title' => 'Roles',
+    'title' => 'roles',
     'activeMenu' => 'roles',
-    'breadcrumbsText' => 'Workspace | Roles'
+    'breadcrumbsText' => 'Workspace | roles'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
     <section class="hero">
         <div class="hero-text">
             <span class="eyebrow">Workspace · Management</span>
-            <h1 class="hero-title">Roles</h1>
-            <p class="hero-sub">Manage and browse Roles records.</p>
+            <h1 class="hero-title">roles</h1>
+            <p class="hero-sub">Manage and browse roles records.</p>
         </div>
         <div class="hero-actions">
             <a href="{{ route('admin.roles.list') }}" class="btn btn--ghost">
@@ -18,7 +21,7 @@
             </a>
             <a href="{{ route('admin.roles.add') }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                Add Role
+                Add role
             </a>
         </div>
     </section>
@@ -45,7 +48,7 @@
                         <span class="ico">
                             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
                         </span>
-                        <input id="searchInput" class="input" type="search" placeholder="Search Roles...">
+                        <input id="searchInput" class="input" type="search" placeholder="Search roles...">
                     </div>
                     <span class="badge primary">{{ count($items) }} items</span>
                 </div>
@@ -63,9 +66,6 @@
                             </th>
                             <th>{{ __('label.name') }}</th>
                             <th>Description</th>
-                            <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.id') }}</th>
-                            <th>{{ __('label.created_at') }}</th>
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
@@ -93,33 +93,16 @@
                                 </td>
                                 <td>{{ $item->description ?? '-' }}</td>
                                 <td>
-                                    @if($item->is_active)
-                                        <span class="badge success dot">{{ __('label.active') }}</span>
-                                    @else
-                                        <span class="badge dot" style="color:var(--t-light)">{{ __('label.inactive') }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="data-cell-mono" title="{{ $item->id }}">
-                                        {{ substr($item->id, 0, 8) }}…
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="data-cell-mono">
-                                        {{ $item->created_at ? $item->created_at->format('M d · H:i') : '-' }}
-                                    </span>
-                                </td>
-                                <td>
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.roles.show', $item->id), 'View details') }}
-                                        {{ btn_edit(route('admin.roles.edit', $item->id), 'Edit Role') }}
-                                        {{ btn_delete(route('admin.roles.destroy', $item->id), null, 'Delete Role', null, $item->name ?? 'Role') }}
+                                        {{ btn_edit(route('admin.roles.edit', $item->id), 'Edit role') }}
+                                        {{ btn_delete(route('admin.roles.destroy', $item->id), null, 'Delete role', null, $item->name ?? 'role') }}
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                                <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
                                     {{ __('message.not_found') }}
                                 </td>
                             </tr>

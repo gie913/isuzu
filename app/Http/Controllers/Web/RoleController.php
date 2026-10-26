@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Web;
 
 use App\Facades\ModuleAccess;
 use App\Http\Controllers\Controller;
+use App\Models\ModuleAccess as ModuleAccessModel;
+use App\Services\ModuleService;
 use App\Services\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -13,10 +15,12 @@ use Illuminate\View\View;
 class RoleController extends Controller
 {
     protected RoleService $roleService;
+    protected ModuleService $moduleService;
 
-    public function __construct(RoleService $roleService)
+    public function __construct(RoleService $roleService, ModuleService $moduleService)
     {
         $this->roleService = $roleService;
+        $this->moduleService = $moduleService;
     }
 
     /**
@@ -133,8 +137,12 @@ class RoleController extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
+        $treeRes = $this->moduleService->getTree();
+        $moduleTree = $treeRes['success'] ? $treeRes['data'] : collect();
+
         return view('admin.sections.roles.roles_add', [
             'moduleName'  => $this->roleService->findModuleName(),
+            'moduleTree'  => $moduleTree,
             'breadcrumbs' => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
                 ['name' => 'Roles', 'url' => route('admin.roles.index')],
@@ -154,10 +162,18 @@ class RoleController extends Controller
             abort(404, 'Record not found.');
         }
 
+        $treeRes = $this->moduleService->getTree();
+        $moduleTree = $treeRes['success'] ? $treeRes['data'] : collect();
+        $existingAccess = ModuleAccessModel::where('m_role_id', $id)
+            ->get()
+            ->keyBy('m_module_id');
+
         return view('admin.sections.roles.roles_detail', [
-            'item'        => $res['data'],
-            'moduleName'  => $this->roleService->findModuleName(),
-            'breadcrumbs' => [
+            'item'           => $res['data'],
+            'moduleName'     => $this->roleService->findModuleName(),
+            'moduleTree'     => $moduleTree,
+            'existingAccess' => $existingAccess,
+            'breadcrumbs'    => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
                 ['name' => 'Roles', 'url' => route('admin.roles.index')],
                 ['name' => 'Role Details', 'url' => route('admin.roles.show', $id)],
@@ -176,10 +192,18 @@ class RoleController extends Controller
             abort(404, 'Record not found.');
         }
 
+        $treeRes = $this->moduleService->getTree();
+        $moduleTree = $treeRes['success'] ? $treeRes['data'] : collect();
+        $existingAccess = ModuleAccessModel::where('m_role_id', $id)
+            ->get()
+            ->keyBy('m_module_id');
+
         return view('admin.sections.roles.roles_edit', [
-            'item'        => $res['data'],
-            'moduleName'  => $this->roleService->findModuleName(),
-            'breadcrumbs' => [
+            'item'           => $res['data'],
+            'moduleName'     => $this->roleService->findModuleName(),
+            'moduleTree'     => $moduleTree,
+            'existingAccess' => $existingAccess,
+            'breadcrumbs'    => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
                 ['name' => 'Roles', 'url' => route('admin.roles.index')],
                 ['name' => 'Edit Role', 'url' => route('admin.roles.edit', $id)],
@@ -198,11 +222,13 @@ class RoleController extends Controller
             'name'         => 'required|string|max:255',
             'order_number' => 'required|integer',
             'is_verifier'  => 'nullable|boolean',
+            'modules'      => 'nullable|array',
         ]);
 
         $validated['is_verifier'] = (bool) $request->input('is_verifier', 0);
+        $moduleAccess = $request->input('modules', []);
 
-        $this->roleService->create($validated);
+        $this->roleService->createWithAccess($validated, $moduleAccess);
 
         return redirect()->route('admin.roles.index')->with('success', __('message.created_success'));
     }
@@ -218,11 +244,13 @@ class RoleController extends Controller
             'name'         => 'required|string|max:255',
             'order_number' => 'required|integer',
             'is_verifier'  => 'nullable|boolean',
+            'modules'      => 'nullable|array',
         ]);
 
         $validated['is_verifier'] = (bool) $request->input('is_verifier', 0);
+        $moduleAccess = $request->input('modules', []);
 
-        $this->roleService->update($id, $validated);
+        $this->roleService->updateWithAccess($id, $validated, $moduleAccess);
 
         return redirect()->route('admin.roles.index')->with('success', __('message.updated_success'));
     }

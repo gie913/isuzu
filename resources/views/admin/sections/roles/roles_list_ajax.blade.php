@@ -1,15 +1,18 @@
 @extends('admin.layouts.theme', [
-    'title' => 'Roles (Server-Side Ajax)',
+    'title' => 'roles (Server-Side Ajax)',
     'activeMenu' => 'roles',
-    'breadcrumbsText' => 'Workspace | Roles | Server-Side Ajax'
+    'breadcrumbsText' => 'Workspace | roles | Server-Side Ajax'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
     <section class="hero">
         <div class="hero-text">
             <span class="eyebrow">Workspace · Server-Side DataTable</span>
-            <h1 class="hero-title">Roles <span class="badge solid primary" style="font-size:12px;vertical-align:middle;margin-left:8px;">AJAX</span></h1>
+            <h1 class="hero-title">roles <span class="badge solid primary" style="font-size:12px;vertical-align:middle;margin-left:8px;">AJAX</span></h1>
             <p class="hero-sub">Dynamic server-side pagination, search, and sorting powered by asynchronous JSON API.</p>
         </div>
         <div class="hero-actions">
@@ -18,7 +21,7 @@
             </a>
             <a href="{{ route('admin.roles.add') }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                Add Role
+                Add role
             </a>
         </div>
     </section>
@@ -45,7 +48,7 @@
                         <span class="ico">
                             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
                         </span>
-                        <input id="ajaxSearchInput" class="input" type="search" placeholder="Search Roles...">
+                        <input id="ajaxSearchInput" class="input" type="search" placeholder="Search roles...">
                     </div>
                     <span class="badge primary" id="ajaxTotalBadge">Loading…</span>
                     <span id="ajaxLoadingSpinner" style="display:none;font-size:12px;color:var(--t-light);">
@@ -72,17 +75,12 @@
                                 {{ __('label.name') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
                             </th>
                             <th>Description</th>
-                            <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.id') }}</th>
-                            <th class="is-sortable" data-sort="created_at" style="cursor:pointer;">
-                                {{ __('label.created_at') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
-                            </th>
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody id="ajaxTableBody">
                         <tr>
-                            <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                            <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
                                 Loading data from server…
                             </td>
                         </tr>
@@ -111,7 +109,7 @@
 @section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const endpoint = "{!! $ajaxEndpoint !!}";
+    const endpoint = "{!$ajaxEndpoint!}";
     const tbody = document.getElementById('ajaxTableBody');
     const searchInput = document.getElementById('ajaxSearchInput');
     const perPageSelect = document.getElementById('ajaxPerPageSelect');
@@ -160,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => {
             console.error('Ajax Table Error:', err);
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
             if (spinner) spinner.style.display = 'none';
         });
     }
@@ -170,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalBadge.textContent = `${response.total} items`;
 
         if (response.total === 0 || rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
             pagingInfo.innerHTML = `Showing <strong style="color:var(--t-base)">0</strong> of <strong style="color:var(--t-base)">0</strong>`;
             return;
         }
@@ -197,9 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </td>
                     <td>${item.description}</td>
-                    <td>${item.status_html}</td>
-                    <td><span class="data-cell-mono" title="${item.id}">${item.short_id}</span></td>
-                    <td><span class="data-cell-mono">${item.created_at}</span></td>
                     <td>${item.actions}</td>
                 </tr>
             `;

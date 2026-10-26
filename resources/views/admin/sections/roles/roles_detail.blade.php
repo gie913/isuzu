@@ -1,15 +1,18 @@
 @extends('admin.layouts.theme', [
-    'title' => 'Role Details',
+    'title' => 'role Details',
     'activeMenu' => 'roles',
-    'breadcrumbsText' => 'Workspace | Roles | Details'
+    'breadcrumbsText' => 'Workspace | roles | Details'
 ])
+
+@section('css')
+@endsection
 
 @section('content')
 <main class="content">
     <section class="hero">
         <div class="hero-text">
-            <span class="eyebrow">Workspace · Roles</span>
-            <h1 class="hero-title">{{ $item->name }}</h1>
+            <span class="eyebrow">Workspace · roles</span>
+            <h1 class="hero-title">{{ $item->name ?? 'Record' }}</h1>
             <p class="hero-sub">Complete details and metadata overview.</p>
         </div>
         <div class="hero-actions">
@@ -18,7 +21,7 @@
             </a>
             <a href="{{ route('admin.roles.edit', $item->id) }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z"/></svg>
-                Edit Role
+                Edit role
             </a>
         </div>
     </section>
@@ -28,7 +31,7 @@
             <div class="card-head">
                 <div class="card-title-wrap">
                     <span class="eyebrow">Identity Card</span>
-                    <h2 class="card-title">Role overview</h2>
+                    <h2 class="card-title">role overview</h2>
                 </div>
                 @if($item->is_active)
                     <span class="badge success dot">{{ __('label.active') }}</span>
@@ -40,22 +43,19 @@
             <div class="form-grid">
                 <div class="field">
                     <label class="field-label">Code</label>
-                    <input class="input" type="text" value="{{ $item->code }}" readonly disabled style="font-family: var(--font-mono, monospace);">
+                    <input class="input" type="text" value="{{ $item->code }}" readonly disabled>
                 </div>
-
                 <div class="field">
-                    <label class="field-label">{{ __('label.name') }}</label>
+                    <label class="field-label">Name</label>
                     <input class="input" type="text" value="{{ $item->name }}" readonly disabled>
                 </div>
-
+                <div class="field">
+                    <label class="field-label">Is Verifier</label>
+                    <input class="input" type="text" value="{{ $item->is_verifier }}" readonly disabled>
+                </div>
                 <div class="field">
                     <label class="field-label">Order Number</label>
                     <input class="input" type="text" value="{{ $item->order_number }}" readonly disabled>
-                </div>
-
-                <div class="field">
-                    <label class="field-label">Is Verifier</label>
-                    <input class="input" type="text" value="{{ $item->is_verifier ? 'Yes' : 'No' }}" readonly disabled>
                 </div>
 
                 <!-- Audit & System Meta Separator -->
@@ -89,16 +89,19 @@
             <div class="form-actions" style="margin-top: 24px;">
                 <a href="{{ route('admin.roles.index') }}" class="btn btn--ghost">{{ __('form.back') }}</a>
                 <span class="spacer"></span>
-                <a href="{{ route('admin.roles.edit', $item->id) }}" class="btn btn--primary">Edit Role</a>
-                <form action="{{ route('admin.roles.destroy', $item->id) }}" method="POST" class="form-delete-swal" data-record-name="{{ $item->name ?? 'Role' }}" style="display:inline;">
+                <a href="{{ route('admin.roles.edit', $item->id) }}" class="btn btn--primary">Edit role</a>
+                <form action="{{ route('admin.roles.destroy', $item->id) }}" method="POST" class="form-delete-swal" data-record-name="{{ $item->name ?? 'role' }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn--ghost" style="color:var(--danger, #ef4444); border-color: rgba(239, 68, 68, 0.2);">
-                        Delete Role
+                        Delete role
                     </button>
                 </form>
             </div>
         </section>
     </div>
 </main>
+@endsection
+
+@section('js')
 @endsection
