@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Web;
 
 use App\Facades\ModuleAccess;
 use App\Http\Controllers\Controller;
+use App\Models\Role;
+use App\Services\RoleService;
 use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
     protected UserService $userService;
+    protected RoleService $roleService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, RoleService $roleService)
     {
         $this->userService = $userService;
+        $this->roleService = $roleService;
     }
 
     /**
@@ -31,6 +37,9 @@ class UserController extends Controller
         }
 
         $result = $this->userService->all();
+        if ($result['success'] && $result['data'] instanceof \Illuminate\Database\Eloquent\Collection) {
+            $result['data']->load('role');
+        }
 
         return view('admin.sections.users.users_list', [
             'users'       => $result['data'],
@@ -105,6 +114,7 @@ class UserController extends Controller
 
         $res = $this->userService->paginate($perPage, $search, $searchColumns, $orderBy, $orderDir, $filters);
         $paginator = $res['data'];
+        $paginator->load('role');
 
         $items = collect($paginator->items())->map(function ($user, $idx) use ($paginator) {
             $initials = strtoupper(substr($user->name ?? 'U', 0, 2));
@@ -116,11 +126,14 @@ class UserController extends Controller
                 . btn_delete(route('admin.users.destroy', $user->id), null, 'Delete user', null, $user->name ?? $user->username ?? 'this user')
                 . '</div>';
 
+            $roleName = $user->role ? $user->role->name : '-';
+
             return [
                 'id'         => $user->id,
                 'short_id'   => substr($user->id, 0, 8) . '…',
                 'name'       => $user->name,
                 'username'   => $user->username ?? '-',
+                'role_name'  => $roleName,
                 'email'      => $user->email,
                 'is_active'  => (bool) $user->is_active,
                 'status_html'=> $user->is_active
@@ -159,7 +172,11 @@ class UserController extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
+        $rolesResult = $this->roleService->all();
+        $roles = $rolesResult['success'] ? $rolesResult['data'] : collect();
+
         return view('admin.sections.users.users_add', [
+            'roles'       => $roles,
             'moduleName'  => $this->userService->findModuleName(),
             'breadcrumbs' => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
@@ -186,8 +203,12 @@ class UserController extends Controller
             abort(404, 'User not found');
         }
 
+        $rolesResult = $this->roleService->all();
+        $roles = $rolesResult['success'] ? $rolesResult['data'] : collect();
+
         return view('admin.sections.users.users_edit', [
             'user'        => $res['data'],
+            'roles'       => $roles,
             'moduleName'  => $this->userService->findModuleName(),
             'breadcrumbs' => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
@@ -210,10 +231,12 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'nullable|string|max:50|unique:m_user,username',
-            'email'    => 'required|email|unique:m_user,email',
-            'password' => 'required|string|min:8',
+            'name'      => 'required|string|max:255',
+            'username'  => 'nullable|string|max:50|unique:m_user,username',
+            'email'     => 'required|email|unique:m_user,email',
+            'm_role_id' => 'nullable|uuid|exists:m_role,id',
+            'password'  => 'required|string|min:8',
+            'image_src' => 'nullable|string',
         ]);
 
         $this->userService->create($validated);
@@ -235,10 +258,17 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'nullable|string|max:50|unique:m_user,username,' . $id,
-            'email'    => 'required|email|unique:m_user,email,' . $id,
+            'name'      => 'required|string|max:255',
+            'username'  => 'nullable|string|max:50|unique:m_user,username,' . $id,
+            'email'     => 'required|email|unique:m_user,email,' . $id,
+            'm_role_id' => 'nullable|uuid|exists:m_role,id',
+            'password'  => 'nullable|string|min:8',
+            'image_src' => 'nullable|string',
         ]);
+
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
 
         $this->userService->update($id, $validated);
 
@@ -261,6 +291,8 @@ class UserController extends Controller
         if (!$res['success']) {
             abort(404, 'User not found');
         }
+
+        $res['data']->load('role');
 
         return view('admin.sections.users.users_detail', [
             'user'        => $res['data'],
@@ -291,5 +323,110 @@ class UserController extends Controller
         }
 
         return redirect()->route('admin.users.index')->with('success', __('message.deleted_success'));
+    }
+
+    /**
+     * Show logged in user's profile view ("My Profile").
+     *
+     * @return View
+     */
+    public function myProfile(): View
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        $user->load('role');
+
+        return view('admin.sections.users.my_profile', [
+            'user'        => $user,
+            'moduleName'  => 'My Profile',
+            'breadcrumbs' => [
+                ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
+                ['name' => 'My Profile', 'url' => route('admin.my-profile')],
+            ],
+        ]);
+    }
+
+    /**
+     * Update logged in user's profile information.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function updateMyProfile(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:m_user,email,' . $user->id,
+        ]);
+
+        $this->userService->update($user->id, $validated);
+
+        return redirect()->route('admin.my-profile')->with('success', 'Profile updated successfully.');
+    }
+
+    /**
+     * Show change password form for authenticated user.
+     *
+     * @return View
+     */
+    public function changePassword(): View
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        return view('admin.sections.users.change_password', [
+            'user'        => $user,
+            'moduleName'  => 'Change Password',
+            'breadcrumbs' => [
+                ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
+                ['name' => 'Change Password', 'url' => route('admin.change-password')],
+            ],
+        ]);
+    }
+
+    /**
+     * Update authenticated user's password.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        $request->validate([
+            'current_password'          => 'required|string',
+            'password'                  => 'required|string|min:8|confirmed|different:current_password',
+            'password_confirmation'     => 'required|string',
+        ], [
+            'current_password.required' => 'The old password is required.',
+            'password.different'        => 'The new password must be different from the old password.',
+            'password.confirmed'        => 'The new password confirmation does not match.',
+        ]);
+
+        if (!Hash::check($request->input('current_password'), $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'The provided old password does not match our records.',
+            ]);
+        }
+
+        $this->userService->update($user->id, [
+            'password' => Hash::make($request->input('password')),
+        ]);
+
+        return redirect()->route('admin.change-password')->with('success', 'Password changed successfully.');
     }
 }

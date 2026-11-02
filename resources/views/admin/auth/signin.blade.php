@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-    <title>Sign in · ISUZU Admin Workspace</title>
+    <title>Sign in · {{ config('app.name', env('APP_NAME', 'Admin')) }} Workspace</title>
     <script>
         !function(){try{var t=localStorage.getItem("dash26-theme"),e=window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",t||(e?"dark":"light"))}catch(t){document.documentElement.setAttribute("data-theme","light")}}()
     </script>
@@ -22,7 +22,7 @@
                     <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                     </svg>
                 </div>
-                <div class="name">{{ config('app.name', env('APP_NAME', 'ISUZU CMS')) }}</div>
+                <div class="name">{{ config('app.name', env('APP_NAME', 'CMS')) }}</div>
             </div>
             <div class="auth-aside-body">
                 <span class="auth-aside-eyebrow">Enterprise · Control Panel</span>
@@ -31,13 +31,13 @@
                 <div class="auth-quote">
                     "Reliable, responsive, and secure. Built upon layered Service-Repository architecture with Laravel Passport integration."
                     <div class="auth-quote-author">
-                        <div class="av">IZ</div>
-                        <div>ISUZU Technical Architecture</div>
+                        <div class="av">{{ strtoupper(substr(config('app.name', env('APP_NAME', 'AD')), 0, 2)) }}</div>
+                        <div>{{ config('app.description', env('APP_DESCRIPTION', config('app.name', env('APP_NAME', 'Technical Architecture')))) }}</div>
                     </div>
                 </div>
             </div>
             <div class="auth-aside-footer">
-                <span>© {{ date('Y') }} ISUZU</span>
+                <span>© {{ date('Y') }} {{ config('app.name', env('APP_NAME', 'Admin')) }}</span>
                 <span>ENTERPRISE CMS</span>
             </div>
         </aside>
@@ -56,7 +56,7 @@
 
             <div class="auth-card">
                 <h2>Welcome back</h2>
-                <p class="sub">Sign in to your ISUZU Admin workspace to continue.</p>
+                <p class="sub">Sign in to your {{ config('app.name', env('APP_NAME', 'Admin')) }} workspace to continue.</p>
 
                 @if ($errors->any())
                     <div style="background:#fee2e2;border:1px solid #f87171;color:#b91c1c;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;">
@@ -123,7 +123,7 @@
             </div>
 
             <div class="auth-main-bottom">
-                ISUZU Administrative System &copy; {{ date('Y') }}. All rights reserved.
+                {{ config('app.name', env('APP_NAME', 'Admin')) }} Administrative System &copy; {{ date('Y') }}. All rights reserved.
             </div>
         </main>
     </div>

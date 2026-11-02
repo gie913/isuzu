@@ -67,7 +67,7 @@ class CodeGeneratorCommand extends Command
         $this->generateApiController($entity, $moduleKey);
 
         // 6. Web Controller
-        $this->generateWebController($entity, $moduleKey, $pluralKey, $titleName, $pluralTitle);
+        $this->generateWebController($entity, $moduleKey, $pluralKey, $titleName, $pluralTitle, $tableName);
 
         // 7. Blade Views (List Client, List Ajax, Add, Edit, Detail)
         $this->generateViews($pluralKey, $titleName, $pluralTitle, $tableName);
@@ -328,31 +328,15 @@ class {$entity}Controller extends BaseController
 
     public function store(Request \$request): JsonResponse
     {
-        \$validator = Validator::make(\$request->all(), [
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        if (\$validator->fails()) {
-            return \$this->sendError('Validation error.', \$validator->errors()->toArray(), 422);
-        }
-
-        \$res = \$this->{$serviceVar}->create(\$validator->validated());
+        // ponytail: no validation on create
+        \$res = \$this->{$serviceVar}->create(\$request->all());
         return \$this->sendResponse(\$res['message'], \$res['data'], 201);
     }
 
     public function update(Request \$request, string \$id): JsonResponse
     {
-        \$validator = Validator::make(\$request->all(), [
-            'name'        => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        if (\$validator->fails()) {
-            return \$this->sendError('Validation error.', \$validator->errors()->toArray(), 422);
-        }
-
-        \$res = \$this->{$serviceVar}->update(\$id, \$validator->validated());
+        // ponytail: no validation on update
+        \$res = \$this->{$serviceVar}->update(\$id, \$request->all());
 
         if (!\$res['success']) {
             return \$this->sendError(\$res['message'], [], 404);
@@ -384,7 +368,8 @@ PHP;
         string $moduleKey,
         string $pluralKey,
         string $titleName,
-        string $pluralTitle
+        string $pluralTitle,
+        ?string $tableName = null
     ): void {
         $path = app_path("Http/Controllers/Web/{$entity}Controller.php");
         if (File::exists($path)) {
@@ -393,6 +378,29 @@ PHP;
         }
 
         $serviceVar = lcfirst($entity) . 'Service';
+
+        // Introspect table columns
+        $columns = [];
+        if ($tableName && Schema::hasTable($tableName)) {
+            $columns = Schema::getColumnListing($tableName);
+        }
+        $excluded = ['id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'is_active'];
+        $modelColumns = array_values(array_filter($columns, fn($col) => !in_array($col, $excluded)));
+        if (empty($modelColumns)) {
+            $modelColumns = ['name', 'description'];
+        }
+
+        $allowedSortList = array_values(array_unique(array_merge($modelColumns, ['created_at', 'is_active'])));
+        $allowedSortStr = var_export($allowedSortList, true);
+        $searchColumnsStr = var_export($modelColumns, true);
+
+        // Build mapping array for ajax item
+        $firstCol = $modelColumns[0] ?? 'name';
+        $itemMappingLines = [];
+        foreach ($modelColumns as $col) {
+            $itemMappingLines[] = "                '{$col}' => \$item->{$col} ?? '-',";
+        }
+        $itemMappingStr = implode("\n", $itemMappingLines);
 
         $content = <<<PHP
 <?php
@@ -473,31 +481,30 @@ class {$entity}Controller extends Controller
         \$orderBy = \$request->input('order_by', 'created_at');
         \$orderDir = strtolower(\$request->input('order_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-        \$allowedSort = ['name', 'created_at', 'is_active'];
+        \$allowedSort = {$allowedSortStr};
         if (!in_array(\$orderBy, \$allowedSort)) {
             \$orderBy = 'created_at';
         }
 
-        \$searchColumns = ['name', 'description'];
+        \$searchColumns = {$searchColumnsStr};
 
         \$res = \$this->{$serviceVar}->paginate(\$perPage, \$search, \$searchColumns, \$orderBy, \$orderDir);
         \$paginator = \$res['data'];
 
         \$items = collect(\$paginator->items())->map(function (\$item, \$idx) {
-            \$initials = strtoupper(substr(\$item->name ?? 'I', 0, 2));
+            \$initials = strtoupper(substr(\$item->{$firstCol} ?? 'I', 0, 2));
             \$avatarClass = 'ma-' . ((\$idx % 6) + 1);
 
             \$actionsHtml = '<div class="data-cell-actions" style="justify-content: flex-end;">'
                 . btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') . ' '
                 . btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') . ' '
-                . btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->name ?? '{$titleName}')
+                . btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->{$firstCol} ?? '{$titleName}')
                 . '</div>';
 
             return [
                 'id'           => \$item->id,
                 'short_id'     => substr(\$item->id, 0, 8) . '…',
-                'name'         => \$item->name,
-                'description'  => \$item->description ?? '-',
+{$itemMappingStr}
                 'is_active'    => (bool) \$item->is_active,
                 'status_html'  => \$item->is_active
                     ? '<span class="badge success dot">' . __('label.active') . '</span>'
@@ -590,12 +597,8 @@ class {$entity}Controller extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
-        \$validated = \$request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        \$this->{$serviceVar}->create(\$validated);
+        // ponytail: no validation on create
+        \$this->{$serviceVar}->create(\$request->all());
 
         return redirect()->route('admin.{$pluralKey}.index')->with('success', __('message.created_success'));
     }
@@ -606,12 +609,8 @@ class {$entity}Controller extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
-        \$validated = \$request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        \$this->{$serviceVar}->update(\$id, \$validated);
+        // ponytail: no validation on update
+        \$this->{$serviceVar}->update(\$id, \$request->all());
 
         return redirect()->route('admin.{$pluralKey}.index')->with('success', __('message.updated_success'));
     }
@@ -655,6 +654,62 @@ PHP;
         if (empty($formColumns)) {
             $formColumns = ['name', 'description'];
         }
+
+        // Build table headers and row cells dynamically
+        $firstCol = $formColumns[0] ?? 'name';
+        $thList = [];
+        $tdList = [];
+        $ajaxThList = [];
+        $ajaxTdList = [];
+
+        foreach ($formColumns as $idx => $col) {
+            $colTitle = Str::headline($col);
+            if ($idx === 0) {
+                $thList[] = "                            <th>{$colTitle}</th>";
+                $tdList[] = "                                <td>\n"
+                    . "                                    <div class=\"data-cell-user\">\n"
+                    . "                                        <div class=\"av {{ \$avatarClass }}\">{{ \$initials }}</div>\n"
+                    . "                                        <div class=\"data-cell-user-meta\">\n"
+                    . "                                            <div class=\"data-cell-user-name\">\n"
+                    . "                                                <a href=\"{{ route('admin.{$pluralKey}.show', \$item->id) }}\" style=\"color:inherit;text-decoration:none;font-weight:600;\">\n"
+                    . "                                                    {{ \$item->{$col} ?? '-' }}\n"
+                    . "                                                </a>\n"
+                    . "                                            </div>\n"
+                    . "                                        </div>\n"
+                    . "                                    </div>\n"
+                    . "                                </td>";
+
+                $ajaxThList[] = "                            <th class=\"is-sortable\" data-sort=\"{$col}\" style=\"cursor:pointer;\">\n"
+                    . "                                {$colTitle} <span class=\"sort\"><svg viewBox=\"0 0 24 24\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n"
+                    . "                            </th>";
+                $ajaxTdList[] = "                    <td>\n"
+                    . "                        <div class=\"data-cell-user\">\n"
+                    . "                            <div class=\"av \${item.avatar_class}\">\${item.initials}</div>\n"
+                    . "                            <div class=\"data-cell-user-meta\">\n"
+                    . "                                <div class=\"data-cell-user-name\">\n"
+                    . "                                    <a href=\"\${item.detail_url}\" style=\"color:inherit;text-decoration:none;font-weight:600;\">\n"
+                    . "                                        \${item.{$col} ?? '-'}\n"
+                    . "                                    </a>\n"
+                    . "                                </div>\n"
+                    . "                            </div>\n"
+                    . "                        </div>\n"
+                    . "                    </td>";
+            } else {
+                $thList[] = "                            <th>{$colTitle}</th>";
+                $tdList[] = "                                <td>{{ \$item->{$col} ?? '-' }}</td>";
+                $ajaxThList[] = "                            <th class=\"is-sortable\" data-sort=\"{$col}\" style=\"cursor:pointer;\">\n"
+                    . "                                {$colTitle} <span class=\"sort\"><svg viewBox=\"0 0 24 24\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n"
+                    . "                            </th>";
+                $ajaxTdList[] = "                    <td>\${item.{$col} ?? '-'}</td>";
+            }
+        }
+
+        $thHtml = implode("\n", $thList);
+        $tdHtml = implode("\n", $tdList);
+        $ajaxThHtml = implode("\n", $ajaxThList);
+        $ajaxTdHtml = implode("\n", $ajaxTdList);
+        $colCount = count($formColumns) + 2; // + checkbox + actions
+
         $listFile = "{$dir}/{$pluralKey}_list.blade.php";
         if (!File::exists($listFile)) {
             $listContent = <<<BLADE
@@ -724,45 +779,32 @@ PHP;
                             <th style="width:32px">
                                 <label class="check"><input type="checkbox" id="selectAll"><span class="box"></span></label>
                             </th>
-                            <th>{{ __('label.name') }}</th>
-                            <th>Description</th>
+{$thHtml}
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse(\$items as \$index => \$item)
                             @php
-                                \$initials = strtoupper(substr(\$item->name ?? 'I', 0, 2));
+                                \$initials = strtoupper(substr(\$item->{$firstCol} ?? 'I', 0, 2));
                                 \$avatarClass = 'ma-' . ((\$index % 6) + 1);
                             @endphp
-                            <tr class="data-row" data-name="{{ strtolower(\$item->name) }}">
+                            <tr class="data-row" data-name="{{ strtolower(\$item->{$firstCol} ?? '') }}">
                                 <td>
                                     <label class="check"><input type="checkbox" class="row-checkbox"><span class="box"></span></label>
                                 </td>
-                                <td>
-                                    <div class="data-cell-user">
-                                        <div class="av {{ \$avatarClass }}">{{ \$initials }}</div>
-                                        <div class="data-cell-user-meta">
-                                            <div class="data-cell-user-name">
-                                                <a href="{{ route('admin.{$pluralKey}.show', \$item->id) }}" style="color:inherit;text-decoration:none;font-weight:600;">
-                                                    {{ \$item->name }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ \$item->description ?? '-' }}</td>
+{$tdHtml}
                                 <td>
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') }}
                                         {{ btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') }}
-                                        {{ btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->name ?? '{$titleName}') }}
+                                        {{ btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->{$firstCol} ?? '{$titleName}') }}
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
+                                <td colspan="{$colCount}" style="text-align:center;padding:32px;color:var(--t-light);">
                                     {{ __('message.not_found') }}
                                 </td>
                             </tr>
@@ -900,16 +942,13 @@ BLADE;
                             <th style="width:32px">
                                 <label class="check"><input type="checkbox" id="ajaxSelectAll"><span class="box"></span></label>
                             </th>
-                            <th class="is-sortable" data-sort="name" style="cursor:pointer;">
-                                {{ __('label.name') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
-                            </th>
-                            <th>Description</th>
+{$ajaxThHtml}
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody id="ajaxTableBody">
                         <tr>
-                            <td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">
+                            <td colspan="{$colCount}" style="text-align:center;padding:32px;color:var(--t-light);">
                                 Loading data from server…
                             </td>
                         </tr>
@@ -987,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => {
             console.error('Ajax Table Error:', err);
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="{$colCount}" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
             if (spinner) spinner.style.display = 'none';
         });
     }
@@ -997,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalBadge.textContent = `\${response.total} items`;
 
         if (response.total === 0 || rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="{$colCount}" style="text-align:center;padding:32px;color:var(--t-light);">No records found.</td></tr>`;
             pagingInfo.innerHTML = `Showing <strong style="color:var(--t-base)">0</strong> of <strong style="color:var(--t-base)">0</strong>`;
             return;
         }
@@ -1011,19 +1050,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>
                         <label class="check"><input type="checkbox" class="ajax-row-check" value="\${item.id}"><span class="box"></span></label>
                     </td>
-                    <td>
-                        <div class="data-cell-user">
-                            <div class="av \${item.avatar_class}">\${item.initials}</div>
-                            <div class="data-cell-user-meta">
-                                <div class="data-cell-user-name">
-                                    <a href="\${item.detail_url}" style="color:inherit;text-decoration:none;font-weight:600;">
-                                        \${item.name}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>\${item.description}</td>
+{$ajaxTdHtml}
                     <td>\${item.actions}</td>
                 </tr>
             `;

@@ -78,6 +78,7 @@
                             <th class="is-sortable" data-sort="username" style="cursor:pointer;">
                                 {{ __('form.username') }} <span class="sort"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span>
                             </th>
+                            <th>{{ __('label.role') ?? 'Role' }}</th>
                             <th>{{ __('label.status') }}</th>
                             <th>{{ __('label.id') }}</th>
                             <th class="is-sortable" data-sort="created_at" style="cursor:pointer;">
@@ -88,7 +89,7 @@
                     </thead>
                     <tbody id="ajaxTableBody">
                         <tr>
-                            <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                            <td colspan="8" style="text-align:center;padding:32px;color:var(--t-light);">
                                 Loading data from server…
                             </td>
                         </tr>
@@ -168,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => {
             console.error('Ajax Table Error:', err);
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--danger,#ef4444);">Failed to load data from server.</td></tr>`;
             if (spinner) spinner.style.display = 'none';
         });
     }
@@ -178,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalBadge.textContent = `${response.total} users`;
 
         if (response.total === 0 || rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">No users found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--t-light);">No users found.</td></tr>`;
             pagingInfo.innerHTML = `Showing <strong style="color:var(--t-base)">0</strong> of <strong style="color:var(--t-base)">0</strong>`;
             return;
         }
@@ -207,6 +208,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                     <td>
                         <span class="badge info">${item.username}</span>
+                    </td>
+                    <td>
+                        <span class="badge primary">${item.role_name ?? '-'}</span>
                     </td>
                     <td>
                         ${item.status_html}

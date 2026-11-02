@@ -14,8 +14,30 @@
     <script defer="defer" src="{{ asset('themes/admin/2026.5a84696f.js') }}"></script>
     <script defer="defer" src="{{ asset('themes/admin/vendor-chartjs.149393ea.js') }}"></script>
     <link href="{{ asset('themes/admin/style.76ee5eee.css') }}" rel="stylesheet">
+    <style>
+        .shell {
+            min-height: 100vh;
+            display: grid;
+        }
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-width: 0;
+        }
+        .main > .content {
+            flex: 1 0 auto;
+        }
+        .d-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+        }
+    </style>
     <link href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
     <script src="{{ asset('plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <link href="{{ asset('plugins/cropper-js/dist/cropper.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('plugins/cropper-js/dist/cropper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/uploader.js') }}"></script>
     @yield('css')
     @stack('styles')
 </head>
@@ -39,6 +61,76 @@
     @yield('js')
     @stack('scripts')
     <script>
+        // Automatic Active State & Collapse handler for Dynamic Sidebar
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentPath = window.location.pathname.replace(/\/+$/, '');
+            const currentUrl = window.location.href;
+
+            const sidebar = document.querySelector('.d-sidebar');
+            if (!sidebar) return;
+
+            // 1. Check submenu links inside groups
+            const subLinks = sidebar.querySelectorAll('.nav-submenu a');
+            let matchedSub = false;
+
+            subLinks.forEach(function (link) {
+                const linkHref = link.getAttribute('href');
+                if (!linkHref || linkHref === '#' || linkHref.startsWith('javascript:')) return;
+
+                const linkPath = link.pathname.replace(/\/+$/, '');
+                const dataLinkPath = link.getAttribute('data-link-path');
+
+                let isMatch = false;
+                if (linkPath && currentPath === linkPath) {
+                    isMatch = true;
+                } else if (dataLinkPath && dataLinkPath !== '#' && currentPath.includes(dataLinkPath)) {
+                    isMatch = true;
+                } else if (linkPath && linkPath !== '/admin' && currentPath.startsWith(linkPath)) {
+                    isMatch = true;
+                }
+
+                if (isMatch) {
+                    matchedSub = true;
+                    link.classList.add('is-active', 'fw-bold');
+
+                    // Expand parent group
+                    const group = link.closest('.nav-item-group');
+                    if (group) {
+                        group.classList.add('is-open');
+                        const toggleLink = group.querySelector('.nav-link');
+                        if (toggleLink) toggleLink.classList.add('is-active');
+                    }
+                }
+            });
+
+            // 2. Check top-level nav-links
+            const topNavLinks = sidebar.querySelectorAll('.nav-section > .nav-link');
+            topNavLinks.forEach(function (link) {
+                const linkHref = link.getAttribute('href');
+                if (!linkHref || linkHref === '#' || linkHref.startsWith('javascript:')) return;
+
+                const linkPath = link.pathname.replace(/\/+$/, '');
+                const dataLinkPath = link.getAttribute('data-link-path');
+
+                if (linkPath === '/admin/dashboard' || linkHref.includes('/admin/dashboard')) {
+                    if (currentPath === '/admin/dashboard' || currentPath === '/admin' || currentPath === '') {
+                        link.classList.add('is-active');
+                    }
+                    return;
+                }
+
+                if (!matchedSub) {
+                    if (linkPath && currentPath === linkPath) {
+                        link.classList.add('is-active');
+                    } else if (dataLinkPath && dataLinkPath !== '#' && currentPath.includes(dataLinkPath)) {
+                        link.classList.add('is-active');
+                    } else if (linkPath && linkPath !== '/admin' && currentPath.startsWith(linkPath)) {
+                        link.classList.add('is-active');
+                    }
+                }
+            });
+        });
+
         document.addEventListener('submit', function (e) {
             const form = e.target;
             if (!form || !form.classList.contains('form-delete-swal')) return;

@@ -11,35 +11,27 @@
         </div>
     </div>
 
-    <!-- Workspace Section -->
-    <nav class="nav-section">
-        <div class="nav-label">Workspace</div>
-        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}" href="{{ route('admin.dashboard') }}">
-            <svg viewBox="0 0 24 24"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
-            <span>{{ __('label.dashboard') }}</span>
-        </a>
-        <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}" href="{{ route('admin.users.index') }}">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>{{ __('label.users') }}</span>
-        </a>
-    </nav>
+    <!-- Dynamic / Generated Sidebar Menu -->
+    @php
+        $sidebarmenuPath = storage_path('app/private/sidebarmenu.html');
+    @endphp
 
-    <!-- Components / Navigation Section -->
-    <nav class="nav-section">
-        <div class="nav-label">System</div>
-        <div class="nav-item-group {{ request()->routeIs('admin.users.*') ? 'is-open' : '' }}" data-nav-group>
-            <a class="nav-link" href="javascript:void(0)" data-nav-toggle>
-                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 16h18M9 4v16"/></svg>
-                <span>Management</span>
-                <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
+    @if(file_exists($sidebarmenuPath))
+        {!! file_get_contents($sidebarmenuPath) !!}
+    @else
+        <!-- Fallback Workspace Section if sidebarmenu.html not yet generated -->
+        <nav class="nav-section">
+            <div class="nav-label">Workspace</div>
+            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}" href="{{ route('admin.dashboard') }}">
+                <svg viewBox="0 0 24 24"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
+                <span>Dashboard</span>
             </a>
-            <div class="nav-submenu">
-                <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.index') ? 'fw-bold' : '' }}">Users List</a>
-                <a href="{{ route('admin.users.list') }}" class="{{ request()->routeIs('admin.users.list') ? 'fw-bold' : '' }}">Users List (Ajax)</a>
-                <a href="{{ route('admin.users.add') }}" class="{{ request()->routeIs('admin.users.add') ? 'fw-bold' : '' }}">Add User</a>
-            </div>
-        </div>
-    </nav>
+            <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}" href="{{ route('admin.users.index') }}">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>{{ __('label.users') }}</span>
+            </a>
+        </nav>
+    @endif
 
     <!-- Sidebar Footer -->
     <div class="sidebar-footer">
@@ -63,9 +55,13 @@
                     <div class="dd-profile-name">{{ Auth::user()?->name ?? 'Administrator' }}</div>
                     <div class="dd-profile-email">{{ Auth::user()?->email ?? 'admin@isuzu.com' }}</div>
                 </div>
-                <a class="dd-menu-item" href="#">
+                <a class="dd-menu-item" href="{{ route('admin.my-profile') }}">
                     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Profile
+                    My Profile
+                </a>
+                <a class="dd-menu-item" href="{{ route('admin.change-password') }}">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Change Password
                 </a>
                 <div class="dd-divider"></div>
                 <form id="sidebarLogoutForm" action="{{ route('admin.logout') }}" method="POST" style="display: none;">

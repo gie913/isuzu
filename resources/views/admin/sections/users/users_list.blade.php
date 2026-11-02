@@ -4,6 +4,77 @@
     'breadcrumbsText' => 'Workspace | ' . __('label.users')
 ])
 
+@section('css')
+<style>
+    /* Fixed Table Columns (Name & Actions) */
+    .table-scroll-container {
+        overflow-x: auto;
+        margin: 0 -22px;
+        position: relative;
+    }
+
+    #usersTable {
+        margin: 0 22px;
+        min-width: 1000px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /* Fixed Checkbox column (1st column) */
+    #usersTable th:nth-child(1),
+    #usersTable td:nth-child(1) {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: var(--bg-card);
+        width: 44px;
+        min-width: 44px;
+    }
+
+    /* Fixed Name column (2nd column) */
+    #usersTable th:nth-child(2),
+    #usersTable td:nth-child(2) {
+        position: sticky;
+        left: 44px;
+        z-index: 2;
+        background: var(--bg-card);
+        min-width: 220px;
+        box-shadow: 2px 0 6px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Fixed Actions column (last column) */
+    #usersTable th:last-child,
+    #usersTable td:last-child {
+        position: sticky;
+        right: 0;
+        z-index: 2;
+        background: var(--bg-card);
+        min-width: 140px;
+        box-shadow: -2px 0 6px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Keep top-left and top-right headers above scrolling body cells */
+    #usersTable thead th:nth-child(1),
+    #usersTable thead th:nth-child(2),
+    #usersTable thead th:last-child {
+        z-index: 5;
+    }
+
+    /* Preserve hover & selected row backgrounds on sticky columns */
+    #usersTable tbody tr:hover td:nth-child(1),
+    #usersTable tbody tr:hover td:nth-child(2),
+    #usersTable tbody tr:hover td:last-child {
+        background: var(--bg-hover) !important;
+    }
+
+    #usersTable tbody tr.is-selected td:nth-child(1),
+    #usersTable tbody tr.is-selected td:nth-child(2),
+    #usersTable tbody tr.is-selected td:last-child {
+        background: var(--primary-soft) !important;
+    }
+</style>
+@endsection
+
 @section('content')
 <main class="content">
     <section class="hero">
@@ -58,8 +129,8 @@
                 </div>
             </div>
 
-            <div style="overflow-x:auto;margin:0 -22px">
-                <table class="data-table" id="usersTable" style="margin:0 22px;min-width:900px">
+            <div class="table-scroll-container">
+                <table class="data-table" id="usersTable">
                     <thead>
                         <tr>
                             <th style="width:32px">
@@ -67,9 +138,8 @@
                             </th>
                             <th>{{ __('label.name') }}</th>
                             <th>{{ __('form.username') }}</th>
+                            <th>{{ __('label.role') ?? 'Role' }}</th>
                             <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.id') }}</th>
-                            <th>{{ __('label.created_at') }}</th>
                             <th style="text-align:right">{{ __('label.actions') }}</th>
                         </tr>
                     </thead>
@@ -100,22 +170,16 @@
                                     <span class="badge info">{{ $user->username ?? '-' }}</span>
                                 </td>
                                 <td>
+                                    <span class="badge primary">{{ $user->role ? $user->role->name : '-' }}</span>
+                                </td>
+                                <td>
                                     @if($user->is_active)
-                                        <span class="badge success dot">{{ __('label.active') }}</span>
+                                         <span class="badge success dot">{{ __('label.active') }}</span>
                                     @else
-                                        <span class="badge dot" style="color:var(--t-light)">{{ __('label.inactive') }}</span>
+                                         <span class="badge dot" style="color:var(--t-light)">{{ __('label.inactive') }}</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <span class="data-cell-mono" title="{{ $user->id }}">
-                                        {{ substr($user->id, 0, 8) }}…
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="data-cell-mono">
-                                        {{ $user->created_at ? $user->created_at->format('M d · H:i') : '-' }}
-                                    </span>
-                                </td>
+                                
                                 <td>
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
                                         {{ btn_detail(route('admin.users.show', $user->id), 'View details') }}
@@ -126,7 +190,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:32px;color:var(--t-light);">
+                                <td colspan="8" style="text-align:center;padding:32px;color:var(--t-light);">
                                     {{ __('message.not_found') }}
                                 </td>
                             </tr>

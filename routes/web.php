@@ -78,6 +78,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ]);
         })->name('dashboard');
 
+        // My Profile & Change Password
+        Route::get('/my-profile', [UserController::class, 'myProfile'])->name('my-profile');
+        Route::put('/my-profile', [UserController::class, 'updateMyProfile'])->name('my-profile.update');
+        Route::get('/change-password', [UserController::class, 'changePassword'])->name('change-password');
+        Route::put('/change-password', [UserController::class, 'updatePassword'])->name('change-password.update');
+
         // Users Module
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
@@ -114,6 +120,42 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{id}/edit', [\App\Http\Controllers\Web\ModuleController::class, 'edit'])->name('edit');
             Route::put('/{id}', [\App\Http\Controllers\Web\ModuleController::class, 'update'])->name('update');
             Route::delete('/{id}', [\App\Http\Controllers\Web\ModuleController::class, 'destroy'])->name('destroy');
+        });
+                // GeneralData Module
+        Route::prefix('general_datas')->name('general_datas.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\GeneralDataController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\GeneralDataController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\GeneralDataController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\GeneralDataController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\GeneralDataController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\GeneralDataController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\GeneralDataController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\GeneralDataController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\GeneralDataController::class, 'destroy'])->name('destroy');
+        });
+                // Upload Module
+        Route::prefix('uploads')->name('uploads.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\UploadController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\UploadController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\UploadController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\UploadController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\UploadController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\UploadController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\UploadController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\UploadController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\UploadController::class, 'destroy'])->name('destroy');
+        });
+                // UploadSetup Module
+        Route::prefix('upload_setups')->name('upload_setups.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\UploadSetupController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\UploadSetupController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\UploadSetupController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\UploadSetupController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\UploadSetupController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\UploadSetupController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\UploadSetupController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\UploadSetupController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\UploadSetupController::class, 'destroy'])->name('destroy');
         });
         /*==new route==*/
     });

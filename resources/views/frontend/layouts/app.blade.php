@@ -104,7 +104,7 @@
 			position: fixed;
 			width: 60px;
 			height: 60px;
-			bottom: 40px;
+			bottom: 110px;
 			right: 40px;
 			background-color: #25d366;
 			color: #fff !important;
@@ -132,7 +132,7 @@
 			.float {
 				width: 50px;
 				height: 50px;
-				bottom: 25px;
+				bottom: 90px;
 				right: 25px;
 				font-size: 26px;
 			}

@@ -388,15 +388,6 @@
                         @enderror
                     </div>
                     <div class="field">
-                        <label class="field-label" for="is_verifier">
-                            Is Verifier <span class="req">*</span>
-                        </label>
-                        <input id="is_verifier" name="is_verifier" class="input @error('is_verifier') is-invalid @enderror" type="text" value="{{ old('is_verifier', $item->is_verifier ? '1' : '0') }}" required>
-                        @error('is_verifier')
-                            <div class="field-error">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="field">
                         <label class="field-label" for="order_number">
                             Order Number <span class="req">*</span>
                         </label>

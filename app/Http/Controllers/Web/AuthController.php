@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Services\SidebarMenuService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,12 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    protected SidebarMenuService $sidebarMenuService;
+
+    public function __construct(SidebarMenuService $sidebarMenuService)
+    {
+        $this->sidebarMenuService = $sidebarMenuService;
+    }
     /**
      * Show the admin signin view.
      *
@@ -51,6 +58,16 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            // Generate sidebarmenu.html in storage/app/private using logged in user's m_role_id
+            $user = Auth::user();
+            $roleId = $user?->m_role_id;
+            try {
+                $this->sidebarMenuService->generate($roleId, $user?->id);
+            } catch (\Throwable $e) {
+                // Keep fallback in case of database or permission exceptions
+                report($e);
+            }
 
             return redirect()->intended(route('admin.dashboard'));
         }

@@ -64,8 +64,8 @@
                 </div>
 
                 <div class="field">
-                    <label class="field-label">Role ID</label>
-                    <input class="input" type="text" value="{{ $user->m_role_id ?? '-' }}" readonly disabled>
+                    <label class="field-label">{{ __('label.role') ?? 'Role' }}</label>
+                    <input class="input" type="text" value="{{ $user->role ? $user->role->name : ($user->m_role_id ?? '-') }}" readonly disabled>
                 </div>
 
                 <div class="field">

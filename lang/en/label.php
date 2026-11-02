@@ -16,4 +16,7 @@ return [
     'test_module' => 'Test Module',
     'role' => 'Role',
     'module' => 'Module',
+    'general_data' => 'General Data',
+    'upload' => 'Uploads',
+    'upload_setup' => 'Upload setup',
 ];

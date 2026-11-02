@@ -50,6 +50,21 @@ if (!function_exists('btn_detail')) {
     }
 }
 
+if (!function_exists('upload_setup_attrs')) {
+    /**
+     * Render data-attributes string for an upload input based on MUploadSetup.
+     *
+     * @param string|null $moduleId
+     * @param string $name
+     * @param array $extra
+     * @return HtmlString
+     */
+    function upload_setup_attrs(?string $moduleId, string $name, array $extra = []): HtmlString
+    {
+        return new HtmlString(\App\Helpers\UploadSetupHelper::getAttributes($moduleId, $name, $extra));
+    }
+}
+
 if (!function_exists('btn_actions')) {
     /**
      * Render action buttons group.

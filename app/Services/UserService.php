@@ -24,6 +24,26 @@ class UserService extends BaseService
         return 'User Management';
     }
 
+    public function create(array $data): array
+    {
+        if (isset($data['image_src'])) {
+            $uploadService = app(\App\Services\UploadService::class);
+            $data['image_src'] = $uploadService->finalizeUpload($data['image_src']);
+        }
+
+        return parent::create($data);
+    }
+
+    public function update(string|int $id, array $data): array
+    {
+        if (isset($data['image_src'])) {
+            $uploadService = app(\App\Services\UploadService::class);
+            $data['image_src'] = $uploadService->finalizeUpload($data['image_src']);
+        }
+
+        return parent::update($id, $data);
+    }
+
     /**
      * Find user by username.
      *
