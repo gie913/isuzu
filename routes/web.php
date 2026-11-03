@@ -157,6 +157,42 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Web\UploadSetupController::class, 'update'])->name('update');
             Route::delete('/{id}', [\App\Http\Controllers\Web\UploadSetupController::class, 'destroy'])->name('destroy');
         });
+                // MProduct Module
+        Route::prefix('m_products')->name('m_products.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\MProductController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\MProductController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\MProductController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\MProductController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\MProductController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\MProductController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\MProductController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\MProductController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\MProductController::class, 'destroy'])->name('destroy');
+        });
+                // TProductApplication Module
+        Route::prefix('t_product_applications')->name('t_product_applications.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\TProductApplicationController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\TProductApplicationController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\TProductApplicationController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\TProductApplicationController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\TProductApplicationController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\TProductApplicationController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\TProductApplicationController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\TProductApplicationController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\TProductApplicationController::class, 'destroy'])->name('destroy');
+        });
+                // Product Module
+        Route::prefix('products')->name('products.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\ProductController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\ProductController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\ProductController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\ProductController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\ProductController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\ProductController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\ProductController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\ProductController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\ProductController::class, 'destroy'])->name('destroy');
+        });
         /*==new route==*/
     });
      

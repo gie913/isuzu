@@ -241,7 +241,7 @@ class UploadService extends BaseService
                 'is_temporary' => 0,
             ]);
 
-            return $newPath;
+            return $upload->is_external_storage ? $newFileSource : $newPath;
         }
 
         // If no DB record was found but string contains tmp_ in public file system

@@ -94,8 +94,12 @@
 
         <!-- User Profile Dropdown -->
         <div class="dd-wrap">
-            <div class="avatar" data-dropdown tabindex="0" role="button" aria-label="Account menu">
-                {{ strtoupper(substr(Auth::user()?->name ?? 'AD', 0, 2)) }}
+            <div class="avatar" data-dropdown tabindex="0" role="button" aria-label="Account menu" style="overflow: hidden; padding: 0;">
+                @if (Auth::user()?->image_src)
+                    <img src="{{ Str::startsWith(Auth::user()->image_src, 'http') ? Auth::user()->image_src : asset(Auth::user()->image_src) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                @else
+                    {{ strtoupper(substr(Auth::user()?->name ?? 'AD', 0, 2)) }}
+                @endif
             </div>
             <div class="dd-menu dd-profile" role="menu">
                 <div class="dd-profile-head">

@@ -37,8 +37,12 @@
     <div class="sidebar-footer">
         <div class="dd-wrap" style="width: 100%;">
             <div class="workspace" data-dropdown tabindex="0" role="button" aria-label="User menu" style="cursor: pointer; width: 100%;">
-                <div class="workspace-avatar">
-                    {{ strtoupper(substr(Auth::user()?->name ?? 'AD', 0, 2)) }}
+                <div class="workspace-avatar" style="overflow: hidden;">
+                    @if (Auth::user()?->image_src)
+                        <img src="{{ Str::startsWith(Auth::user()->image_src, 'http') ? Auth::user()->image_src : asset(Auth::user()->image_src) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    @else
+                        {{ strtoupper(substr(Auth::user()?->name ?? 'AD', 0, 2)) }}
+                    @endif
                 </div>
                 <div class="workspace-text">
                     <div class="workspace-name">{{ Auth::user()?->name ?? 'Administrator' }}</div>

@@ -363,8 +363,9 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:m_user,email,' . $user->id,
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:m_user,email,' . $user->id,
+            'image_src' => 'nullable|string',
         ]);
 
         $this->userService->update($user->id, $validated);

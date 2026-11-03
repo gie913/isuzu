@@ -19,4 +19,7 @@ return [
     'general_data' => 'General Data',
     'upload' => 'Uploads',
     'upload_setup' => 'Upload setup',
+    'm_product' => 'M Product',
+    't_product_application' => 'T Product Application',
+    'product' => 'Products',
 ];

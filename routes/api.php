@@ -77,6 +77,30 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Api\UploadSetupController::class, 'update']);
             Route::delete('/{id}', [\App\Http\Controllers\Api\UploadSetupController::class, 'destroy']);
         });
+                // MProduct Resource API
+        Route::prefix('m_products')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\MProductController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\MProductController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\MProductController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\MProductController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\MProductController::class, 'destroy']);
+        });
+                // TProductApplication Resource API
+        Route::prefix('t_product_applications')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\TProductApplicationController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\TProductApplicationController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\TProductApplicationController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\TProductApplicationController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\TProductApplicationController::class, 'destroy']);
+        });
+                // Product Resource API
+        Route::prefix('products')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\ProductController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\ProductController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\ProductController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\ProductController::class, 'destroy']);
+        });
         /*==new route==*/
 
     });

@@ -122,6 +122,39 @@
                         </div>
                         <div class="field-help">Your system role permissions are assigned by administrative authority.</div>
                     </div>
+
+                    <!-- Profile Image (image_src) -->
+                    <div class="field span-2">
+                        <label class="field-label" for="file_image_src">
+                            Profile Picture (image_src)
+                        </label>
+                        <div class="input-icon">
+                            <span class="ico">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </span>
+                            <input type="file" id="file_image_src" class="input upload_file @error('image_src') is-invalid @enderror" accept="image/*" {!! upload_setup_attrs('user', 'image_src', ['preview' => '#preview_image_src', 'setvalue' => '#image_src']) !!}>
+                        </div>
+                        <input type="hidden" id="image_src" name="image_src" value="{{ old('image_src', $user->image_src) }}">
+                        <div class="field-help">Upload an avatar image. Automatically compressed, cropped (1:1), and stored safely.</div>
+                        <div id="preview_image_src" class="upload-preview-container">
+                            @php
+                                $currentImage = old('image_src', $user->image_src);
+                            @endphp
+                            @if($currentImage)
+                                <div class="upload-preview-card" style="display:inline-flex; align-items:center; gap:12px; background:var(--bg-sub, #f8fafc); border:1px solid var(--border, #e2e8f0); border-radius:8px; padding:8px 12px; margin-top:8px;">
+                                    <img src="{{ Str::startsWith($currentImage, 'http') ? $currentImage : asset($currentImage) }}" alt="Preview" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid var(--border, #e2e8f0); cursor:pointer;" onclick="window.open('{{ Str::startsWith($currentImage, 'http') ? $currentImage : asset($currentImage) }}', '_blank')">
+                                    <div style="font-size:12px; line-height:1.4;">
+                                        <div style="font-weight:600; color:var(--success, #10b981);">Current Image</div>
+                                        <a href="{{ Str::startsWith($currentImage, 'http') ? $currentImage : asset($currentImage) }}" target="_blank" style="color:var(--t-body, #1e293b); text-decoration:underline;">View full image</a>
+                                    </div>
+                                    <button type="button" class="btn-remove-upload" onclick="document.getElementById('image_src').value=''; this.closest('.upload-preview-card').remove();" style="background:transparent; border:none; color:var(--t-muted, #64748b); font-size:16px; cursor:pointer; padding:2px 6px; margin-left:auto; border-radius:4px;" title="Remove image">&times;</button>
+                                </div>
+                            @endif
+                        </div>
+                        @error('image_src')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="form-actions" style="margin-top: 24px;">
