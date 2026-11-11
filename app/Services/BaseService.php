@@ -128,6 +128,35 @@ abstract class BaseService
     abstract public function findModuleName(): string;
 
     /**
+     * Get permission access object for the current module and role/user.
+     *
+     * @param string|null $roleId
+     * @return object
+     */
+    public function getAccess(?string $roleId = null): object
+    {
+        if ($roleId === null) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $roleId = $user?->m_role_id ?? 'super-admin';
+        }
+
+        return \App\Facades\ModuleAccess::findByMRoleIdByMCMSModuleCode($roleId, $this->findModuleCode());
+    }
+
+    /**
+     * Check if a specific action is allowed for this module.
+     *
+     * @param string $action ('can_read', 'can_create', 'can_update', 'can_delete')
+     * @param string|null $roleId
+     * @return bool
+     */
+    public function can(string $action = 'can_read', ?string $roleId = null): bool
+    {
+        $access = $this->getAccess($roleId);
+        return !empty($access->$action);
+    }
+
+    /**
      * Standard response formatting.
      *
      * @param bool $success

@@ -101,6 +101,86 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update']);
             Route::delete('/{id}', [\App\Http\Controllers\Api\ProductController::class, 'destroy']);
         });
+                // BaseSetup Resource API
+        Route::prefix('base_setups')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\BaseSetupController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\BaseSetupController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\BaseSetupController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\BaseSetupController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\BaseSetupController::class, 'destroy']);
+        });
+                // Banner Resource API
+        Route::prefix('banners')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\BannerController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\BannerController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\BannerController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\BannerController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\BannerController::class, 'destroy']);
+        });
+                // Content Resource API
+        Route::prefix('contents')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\ContentController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\ContentController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\ContentController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\ContentController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\ContentController::class, 'destroy']);
+        });
+                // ContentDtl Resource API
+        Route::prefix('content_dtls')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\ContentDtlController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\ContentDtlController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\ContentDtlController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\ContentDtlController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\ContentDtlController::class, 'destroy']);
+        });
+                // Page Resource API
+        Route::prefix('pages')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\PageController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\PageController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\PageController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\PageController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\PageController::class, 'destroy']);
+        });
+                // Attachment Resource API
+        Route::prefix('attachments')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\AttachmentController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\AttachmentController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\AttachmentController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\AttachmentController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\AttachmentController::class, 'destroy']);
+        });
+                // Menu Resource API
+        Route::prefix('menus')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\MenuController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\MenuController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\MenuController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\MenuController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\MenuController::class, 'destroy']);
+        });
+                // Message Resource API
+        Route::prefix('messages')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\MessageController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\MessageController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\MessageController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\MessageController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\MessageController::class, 'destroy']);
+        });
+                // Client Resource API
+        Route::prefix('clients')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\ClientController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\ClientController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\ClientController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\ClientController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\ClientController::class, 'destroy']);
+        });
+                // Testimonial Resource API
+        Route::prefix('testimonials')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\TestimonialController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\TestimonialController::class, 'show']);
+            Route::post('/', [\App\Http\Controllers\Api\TestimonialController::class, 'store']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\TestimonialController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\TestimonialController::class, 'destroy']);
+        });
         /*==new route==*/
 
     });

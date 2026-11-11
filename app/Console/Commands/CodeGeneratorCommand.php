@@ -311,12 +311,20 @@ class {$entity}Controller extends BaseController
 
     public function index(): JsonResponse
     {
+        if (!\$this->{$serviceVar}->can('can_read')) {
+            return \$this->sendError('Unauthorized access.', [], 403);
+        }
+
         \$res = \$this->{$serviceVar}->all();
         return \$this->sendResponse(\$res['message'], \$res['data']);
     }
 
     public function show(string \$id): JsonResponse
     {
+        if (!\$this->{$serviceVar}->can('can_read')) {
+            return \$this->sendError('Unauthorized access.', [], 403);
+        }
+
         \$res = \$this->{$serviceVar}->find(\$id);
 
         if (!\$res['success']) {
@@ -328,6 +336,10 @@ class {$entity}Controller extends BaseController
 
     public function store(Request \$request): JsonResponse
     {
+        if (!\$this->{$serviceVar}->can('can_create')) {
+            return \$this->sendError('Unauthorized access.', [], 403);
+        }
+
         // ponytail: no validation on create
         \$res = \$this->{$serviceVar}->create(\$request->all());
         return \$this->sendResponse(\$res['message'], \$res['data'], 201);
@@ -335,6 +347,10 @@ class {$entity}Controller extends BaseController
 
     public function update(Request \$request, string \$id): JsonResponse
     {
+        if (!\$this->{$serviceVar}->can('can_update')) {
+            return \$this->sendError('Unauthorized access.', [], 403);
+        }
+
         // ponytail: no validation on update
         \$res = \$this->{$serviceVar}->update(\$id, \$request->all());
 
@@ -347,6 +363,10 @@ class {$entity}Controller extends BaseController
 
     public function destroy(string \$id): JsonResponse
     {
+        if (!\$this->{$serviceVar}->can('can_delete')) {
+            return \$this->sendError('Unauthorized access.', [], 403);
+        }
+
         \$res = \$this->{$serviceVar}->delete(\$id);
 
         if (!\$res['success']) {
@@ -413,6 +433,7 @@ use App\Services\\{$entity}Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class {$entity}Controller extends Controller
@@ -433,12 +454,14 @@ class {$entity}Controller extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
+        \$user = Auth::user();
         \$result = \$this->{$serviceVar}->all();
 
         return view('admin.sections.{$pluralKey}.{$pluralKey}_list', [
             'items'       => \$result['data'],
             'moduleName'  => \$this->{$serviceVar}->findModuleName(),
             'moduleCode'  => \$this->{$serviceVar}->findModuleCode(),
+            'access'      => ModuleAccess::findByMRoleIdByMCMSModuleCode(\$user?->m_role_id, \$this->{$serviceVar}->findModuleCode()),
             'breadcrumbs' => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
                 ['name' => '{$pluralTitle}', 'url' => route('admin.{$pluralKey}.index')],
@@ -455,9 +478,12 @@ class {$entity}Controller extends Controller
             abort(403, 'Unauthorized module access.');
         }
 
+        \$user = Auth::user();
+
         return view('admin.sections.{$pluralKey}.{$pluralKey}_list_ajax', [
             'moduleName'  => \$this->{$serviceVar}->findModuleName(),
             'moduleCode'  => \$this->{$serviceVar}->findModuleCode(),
+            'access'      => ModuleAccess::findByMRoleIdByMCMSModuleCode(\$user?->m_role_id, \$this->{$serviceVar}->findModuleCode()),
             'breadcrumbs' => [
                 ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
                 ['name' => '{$pluralTitle}', 'url' => route('admin.{$pluralKey}.index')],
@@ -488,17 +514,29 @@ class {$entity}Controller extends Controller
 
         \$searchColumns = {$searchColumnsStr};
 
+        \$user = Auth::user();
+        \$access = ModuleAccess::findByMRoleIdByMCMSModuleCode(\$user?->m_role_id, \$this->{$serviceVar}->findModuleCode());
+
         \$res = \$this->{$serviceVar}->paginate(\$perPage, \$search, \$searchColumns, \$orderBy, \$orderDir);
         \$paginator = \$res['data'];
 
-        \$items = collect(\$paginator->items())->map(function (\$item, \$idx) {
+        \$items = collect(\$paginator->items())->map(function (\$item, \$idx) use (\$access) {
             \$initials = strtoupper(substr(\$item->{$firstCol} ?? 'I', 0, 2));
             \$avatarClass = 'ma-' . ((\$idx % 6) + 1);
 
+            \$actionsParts = [];
+            if (!empty(\$access->can_read)) {
+                \$actionsParts[] = btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details');
+            }
+            if (!empty(\$access->can_update)) {
+                \$actionsParts[] = btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}');
+            }
+            if (!empty(\$access->can_delete)) {
+                \$actionsParts[] = btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->{$firstCol} ?? '{$titleName}');
+            }
+
             \$actionsHtml = '<div class="data-cell-actions" style="justify-content: flex-end;">'
-                . btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') . ' '
-                . btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') . ' '
-                . btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->{$firstCol} ?? '{$titleName}')
+                . implode(' ', \$actionsParts)
                 . '</div>';
 
             return [
@@ -734,10 +772,12 @@ PHP;
             <a href="{{ route('admin.{$pluralKey}.list') }}" class="btn btn--ghost">
                 Switch to Ajax List
             </a>
+            @if(!empty(\$access->can_create))
             <a href="{{ route('admin.{$pluralKey}.add') }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Add {$titleName}
             </a>
+            @endif
         </div>
     </section>
 
@@ -796,9 +836,15 @@ PHP;
 {$tdHtml}
                                 <td>
                                     <div class="data-cell-actions" style="justify-content: flex-end;">
+                                        @if(!empty(\$access->can_read))
                                         {{ btn_detail(route('admin.{$pluralKey}.show', \$item->id), 'View details') }}
+                                        @endif
+                                        @if(!empty(\$access->can_update))
                                         {{ btn_edit(route('admin.{$pluralKey}.edit', \$item->id), 'Edit {$titleName}') }}
+                                        @endif
+                                        @if(!empty(\$access->can_delete))
                                         {{ btn_delete(route('admin.{$pluralKey}.destroy', \$item->id), null, 'Delete {$titleName}', null, \$item->{$firstCol} ?? '{$titleName}') }}
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -890,10 +936,12 @@ BLADE;
             <a href="{{ route('admin.{$pluralKey}.index') }}" class="btn btn--ghost">
                 Standard View
             </a>
+            @if(!empty(\$access->can_create))
             <a href="{{ route('admin.{$pluralKey}.add') }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Add {$titleName}
             </a>
+            @endif
         </div>
     </section>
 

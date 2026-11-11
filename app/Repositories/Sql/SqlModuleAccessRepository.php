@@ -13,18 +13,18 @@ class SqlModuleAccessRepository extends SqlBaseRepository
     }
 
     /**
-     * Find access by role ID and menu code/name.
+     * Find access by role ID and module code/name.
      *
      * @param string $m_role_id
-     * @param string $m_cms_menu_code
+     * @param string $m_cms_module_code
      * @return object|null
      */
-    public function findByMRoleIdByMCMSMenuCode(string $m_role_id, string $m_cms_menu_code): ?object
+    public function findByMRoleIdByMCMSModuleCode(string $m_role_id, string $m_cms_module_code): ?object
     {
         $menu = Module::where('is_active', true)
-            ->where(function ($q) use ($m_cms_menu_code) {
-                $q->where('name', $m_cms_menu_code)
-                    ->orWhere('id', $m_cms_menu_code);
+            ->where(function ($q) use ($m_cms_module_code) {
+                $q->where('name', $m_cms_module_code)
+                    ->orWhere('id', $m_cms_module_code);
             })
             ->first();
 
@@ -74,5 +74,13 @@ class SqlModuleAccessRepository extends SqlBaseRepository
             'm_module_id'       => $menu->id,
             'm_role_id'         => $m_role_id,
         ];
+    }
+
+    /**
+     * Backward-compatible alias for findByMRoleIdByMCMSModuleCode.
+     */
+    public function findByMRoleIdByMCMSMenuCode(string $m_role_id, string $m_cms_menu_code): ?object
+    {
+        return $this->findByMRoleIdByMCMSModuleCode($m_role_id, $m_cms_menu_code);
     }
 }

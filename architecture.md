@@ -31,6 +31,9 @@ You are a senior software architect. Implement the following project architectur
 #### B. Services Layer (`app/Services/`)
 - Base class: `BaseService` injecting repository:
   - Standard delegate methods: `all()`, `find($id)`, `create($data)`, `update($data)`, `delete($id)`.
+  - Built-in permission and access helpers:
+    - `getAccess(?string $roleId = null)`: Fetches the `ModuleAccess` permissions object (`can_read`, `can_create`, `can_update`, `can_delete`) for the module and current user's role via `ModuleAccess::findByMRoleIdByMCMSModuleCode(...)`.
+    - `can(string $action = 'can_read', ?string $roleId = null)`: Convenient boolean check directly on the service.
 - Concrete service classes (e.g. `[Entity]Service` extends `BaseService`):
   - Handle business validation, authorization decisions, status transitions, data transformation.
   - Return standardized response structures, e.g. `['success' => bool, 'data' => mixed, 'message' => string]`.
@@ -42,10 +45,12 @@ You are a senior software architect. Implement the following project architectur
   - Inject relevant `[Entity]Service`.
   - Handle locale resolution from query string (`?lang=`) or session fallback (no `{lang}` route prefix/segment).
   - Check role/module permissions via Access Facade/Helper (e.g. `abort(403)` if unauthorized).
-  - Prepare view data: breadcrumbs, metadata, access rights, API endpoints for AJAX/delete, and render Blade view.
+  - Prepare view data: breadcrumbs, metadata, and `$access` object fetched via `ModuleAccess::findByMRoleIdByMCMSModuleCode($user->m_role_id, $service->findModuleCode())` (passed to Blade views to conditionally display `can_create`, `can_read`, `can_update`, and `can_delete` action buttons).
+  - Render Blade view.
 - **API Controllers (`app/Http/Controllers/Api/`)**:
   - Extend `BaseController` (defines `sendResponse($message, $data)` and `sendError($error, $messages, $code)`).
   - Inject relevant `[Entity]Service`.
+  - Check action authorization using the service (`$this->[entity]Service->can('can_read'|'can_create'|'can_update'|'can_delete')`), returning 403 `sendError('Unauthorized access.', [], 403)` on rejection.
   - Parse request payloads, pass to Service, and return JSON.
   - **Auth / Login (`AuthController`)**:
     - Uses **Laravel Passport** (OAuth2 / Password grant / Personal Access Client).

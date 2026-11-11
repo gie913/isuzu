@@ -193,6 +193,126 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/{id}', [\App\Http\Controllers\Web\ProductController::class, 'update'])->name('update');
             Route::delete('/{id}', [\App\Http\Controllers\Web\ProductController::class, 'destroy'])->name('destroy');
         });
+                // BaseSetup Module
+        Route::prefix('base-setup')->name('base_setups.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\BaseSetupController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\BaseSetupController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\BaseSetupController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\BaseSetupController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\BaseSetupController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\BaseSetupController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\BaseSetupController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\BaseSetupController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\BaseSetupController::class, 'destroy'])->name('destroy');
+        });
+                // Banner Module
+        Route::prefix('banners')->name('banners.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\BannerController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\BannerController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\BannerController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\BannerController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\BannerController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\BannerController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\BannerController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\BannerController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\BannerController::class, 'destroy'])->name('destroy');
+        });
+                // Content Module
+        Route::prefix('contents')->name('contents.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\ContentController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\ContentController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\ContentController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\ContentController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\ContentController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\ContentController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\ContentController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\ContentController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\ContentController::class, 'destroy'])->name('destroy');
+        });
+                // ContentDtl Module
+        Route::prefix('content_dtls')->name('content_dtls.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\ContentDtlController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\ContentDtlController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\ContentDtlController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\ContentDtlController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\ContentDtlController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\ContentDtlController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\ContentDtlController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\ContentDtlController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\ContentDtlController::class, 'destroy'])->name('destroy');
+        });
+                // Page Module
+        Route::prefix('pages')->name('pages.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\PageController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\PageController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\PageController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\PageController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\PageController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\PageController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\PageController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\PageController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\PageController::class, 'destroy'])->name('destroy');
+        });
+                // Attachment Module
+        Route::prefix('attachments')->name('attachments.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\AttachmentController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\AttachmentController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\AttachmentController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\AttachmentController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\AttachmentController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\AttachmentController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\AttachmentController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\AttachmentController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\AttachmentController::class, 'destroy'])->name('destroy');
+        });
+                // Menu Module
+        Route::prefix('menus')->name('menus.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\MenuController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\MenuController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\MenuController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\MenuController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\MenuController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\MenuController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\MenuController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\MenuController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\MenuController::class, 'destroy'])->name('destroy');
+        });
+                // Message Module
+        Route::prefix('messages')->name('messages.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\MessageController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\MessageController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\MessageController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\MessageController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\MessageController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\MessageController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\MessageController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\MessageController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\MessageController::class, 'destroy'])->name('destroy');
+        });
+                // Client Module
+        Route::prefix('clients')->name('clients.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\ClientController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\ClientController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\ClientController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\ClientController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\ClientController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\ClientController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\ClientController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\ClientController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\ClientController::class, 'destroy'])->name('destroy');
+        });
+                // Testimonial Module
+        Route::prefix('testimonials')->name('testimonials.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Web\TestimonialController::class, 'index'])->name('index');
+            Route::get('/list', [\App\Http\Controllers\Web\TestimonialController::class, 'listAjaxView'])->name('list');
+            Route::get('/list/data', [\App\Http\Controllers\Web\TestimonialController::class, 'listAjaxData'])->name('list.data');
+            Route::get('/add', [\App\Http\Controllers\Web\TestimonialController::class, 'add'])->name('add');
+            Route::post('/', [\App\Http\Controllers\Web\TestimonialController::class, 'store'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Web\TestimonialController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Web\TestimonialController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Web\TestimonialController::class, 'update'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Web\TestimonialController::class, 'destroy'])->name('destroy');
+        });
         /*==new route==*/
     });
      

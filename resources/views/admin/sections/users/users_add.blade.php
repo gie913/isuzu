@@ -120,7 +120,7 @@
                     <!-- Profile Image (image_src) -->
                     <div class="field span-2">
                         <label class="field-label" for="file_image_src">
-                            Profile Picture (image_src)
+                            Profile Picture 
                         </label>
                         <div class="input-icon">
                             <span class="ico">

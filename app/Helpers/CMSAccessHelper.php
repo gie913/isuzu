@@ -20,18 +20,18 @@ class CMSAccessHelper
         $this->module_service = $module_service;
     }
 
-    public function findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code)
+    public function findByMRoleIdByMCMSModuleCode($m_role_id, $m_cms_module_code)
     {
-        $page_access = $this->module_access_service->findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code);
+        $page_access = $this->module_access_service->findByMRoleIdByMCMSModuleCode($m_role_id, $m_cms_module_code);
         if ($page_access['success'] == true) {
             $page_access_obj = $page_access['data'];
             if ($page_access_obj->is_submenu == 1) {
                 // get parent of sub menu
                 $parent_menu = $this->module_service->find($page_access_obj->submenu_from_id)['data'];
-                $level_1_menu = $parent_menu?->name ?? $m_cms_menu_code;
+                $level_1_menu = $parent_menu?->name ?? $m_cms_module_code;
             } else {
                 $parent_menu = null;
-                $level_1_menu = $m_cms_menu_code;
+                $level_1_menu = $m_cms_module_code;
             }
 
             $obj = new stdClass();
@@ -52,6 +52,14 @@ class CMSAccessHelper
         return $obj;
     }
 
+    /**
+     * Backward-compatible alias for findByMRoleIdByMCMSModuleCode.
+     */
+    public function findByMRoleIdByMCMSMenuCode($m_role_id, $m_cms_menu_code)
+    {
+        return $this->findByMRoleIdByMCMSModuleCode($m_role_id, $m_cms_menu_code);
+    }
+
     public function findMenuNameById($m_page_menu_id)
     {
         return $this->module_service->find($m_page_menu_id);
@@ -64,7 +72,7 @@ class CMSAccessHelper
      * @param string $action ('can_read', 'can_create', 'can_update', 'can_delete')
      * @return bool
      */
-    public function can(string $m_cms_menu_code, string $action = 'can_read'): bool
+    public function can(string $m_cms_module_code, string $action = 'can_read'): bool
     {
         if (!Auth::check()) {
             return false;
@@ -73,7 +81,7 @@ class CMSAccessHelper
         $user = Auth::user();
         $roleId = $user->m_role_id ?? 'super-admin';
 
-        $access = $this->findByMRoleIdByMCMSMenuCode($roleId, $m_cms_menu_code);
+        $access = $this->findByMRoleIdByMCMSModuleCode($roleId, $m_cms_module_code);
 
         return !empty($access->$action);
     }
